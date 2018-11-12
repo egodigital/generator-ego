@@ -66,7 +66,7 @@ module.exports = class extends Generator {
                                                                                  .apply(this, []);
                                         },
                                     });
-                                })(GENERATOR_FUNC);
+                                })(String(GENERATOR_FUNC));
                             }
                         }
                     }
