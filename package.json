@@ -1,0 +1,24 @@
+{
+  "name": "generator-ego",
+  "version": "0.0.1",
+  "description": "A Yeoman generator with useful general sub generators and the possibility to expand it by JavaScript. ",
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "author": "e.GO Digital GmbH, Aachen, Germany",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/egodigital/generator-ego/issues"
+  },
+  "homepage": "https://github.com/egodigital/generator-ego#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/egodigital/generator-ego.git"
+  },
+  "dependencies": {
+    "yeoman-generator": "^3.1.1"
+  }
+}
