@@ -28,7 +28,7 @@ module.exports = class extends Generator {
     async prompting() {
         // build-in generators
         const BUILDIN_CHOICES = [{
-            name: "Test",
+            name: "🧰  Test",
             value: gen_test.run,
         }];
 
@@ -52,7 +52,7 @@ module.exports = class extends Generator {
                             const GENERATOR_FUNC = GENERATORS[OPTION];
                             if ('function' === typeof GENERATOR_FUNC) {
                                 CUSTOM_CHOISES.push({
-                                    name: OPTION,
+                                    name: `🧩  ${OPTION}`,
                                     value: GENERATOR_FUNC,
                                 });
                             } else {
@@ -60,7 +60,7 @@ module.exports = class extends Generator {
 
                                 ((scriptFile) => {
                                     CUSTOM_CHOISES.push({
-                                        name: OPTION,
+                                        name: `🧩  ${OPTION}`,
                                         value: () => {
                                             return loadScriptFromHome(scriptFile).run
                                                                                  .apply(this, []);
