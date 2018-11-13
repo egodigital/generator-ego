@@ -16,6 +16,7 @@
 
 const chalk = require('chalk');
 const fs = require('fs');
+const gen_api_php_slim = require('./gen/api-php-slim');
 const gen_html5 = require('./gen/html5');
 const Generator = require('yeoman-generator');
 const os = require('os');
@@ -46,6 +47,9 @@ module.exports = class extends Generator {
 
         // build-in generators
         const BUILDIN_CHOICES = [{
+            name: "🧰  API (PHP - Slim)",
+            value: gen_api_php_slim.run,
+        }, {
             name: "🧰  HTML 5",
             value: gen_html5.run,
         }];
