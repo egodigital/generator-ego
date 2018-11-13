@@ -17,7 +17,7 @@
 const fs = require('fs');
 const HtmlEntities = require('html-entities').AllHtmlEntities;
 const path = require('path');
-const ssanitizeFilename = require('sanitize-filename');
+const sanitizeFilename = require('sanitize-filename');
 
 /**
  * A test generator.
@@ -50,7 +50,7 @@ exports.run = async function() {
     const OUT_DIR = path.resolve(
         path.join(
             this.destinationPath(
-                ssanitizeFilename(NAME)
+                sanitizeFilename(NAME)
             ),
         )
     );
