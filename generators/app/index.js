@@ -47,7 +47,7 @@ module.exports = class extends Generator {
 
         // build-in generators
         const BUILDIN_CHOICES = [{
-            name: "🧰  API (PHP - Slim)",
+            name: "🧰  API (PHP - Slim ^3.0)",
             value: gen_api_php_slim.run,
         }, {
             name: "🧰  HTML 5",
