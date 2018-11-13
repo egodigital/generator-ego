@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const fs = require('fs');
-const gen_test = require('./gen/test');
+const gen_html5 = require('./gen/html5');
 const Generator = require('yeoman-generator');
 const os = require('os');
 const path = require('path');
@@ -28,8 +28,8 @@ module.exports = class extends Generator {
     async prompting() {
         // build-in generators
         const BUILDIN_CHOICES = [{
-            name: "🧰  Test",
-            value: gen_test.run,
+            name: "🧰  HTML 5",
+            value: gen_html5.run,
         }];
 
         const CUSTOM_GENERATORS_FILE = path.resolve(
