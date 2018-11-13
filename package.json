@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "html-entities": "^1.2.1",
+    "sanitize-filename": "^1.6.1",
     "yeoman-generator": "^3.1.1"
   }
 }

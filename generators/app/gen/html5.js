@@ -17,6 +17,7 @@
 const fs = require('fs');
 const HtmlEntities = require('html-entities').AllHtmlEntities;
 const path = require('path');
+const ssanitizeFilename = require('sanitize-filename');
 
 /**
  * A test generator.
@@ -49,12 +50,10 @@ exports.run = async function() {
     const OUT_DIR = path.resolve(
         path.join(
             this.destinationPath(
-                NAME
+                ssanitizeFilename(NAME)
             ),
         )
     );
-
-    const TITLE = path.basename(OUT_DIR);
 
     if (fs.existsSync(OUT_DIR)) {
         this.log('[ERROR] Target directory already exists.');
@@ -64,7 +63,7 @@ exports.run = async function() {
     fs.mkdirSync(OUT_DIR);
     this.log(`Created target directory '${ path.basename(OUT_DIR) }'.`);
 
-    this.log(`Copying files to '${ path.basename(OUT_DIR) }'.`);
+    this.log(`Copying files to '${ path.basename(OUT_DIR) }' ...`);
     this.fs.copy(TEMPLATES_DIR + '/**', OUT_DIR);
 
     this.fs.copyTpl(TEMPLATES_DIR + '/index.html', OUT_DIR + '/index.html', {
