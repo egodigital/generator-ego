@@ -14,14 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const htmlEntities = require('html-entities').AllHtmlEntities;
-
 /**
  * A HTML 5 generator.
  */
 exports.run = async function() {
-    const HTML = new htmlEntities();
-
     const TEMPLATES_DIR = this.templatePath('html5');
 
     const NAME_AND_TITLE = await this.tools
@@ -38,7 +34,8 @@ exports.run = async function() {
 
     this.log(`Setting up 'index.html' ...`);
     this.fs.copyTpl(TEMPLATES_DIR + '/index.html', OUT_DIR + '/index.html', {
-        'title': HTML.encode(NAME_AND_TITLE.title),
+        'title': this.tools
+            .encodeHtml(NAME_AND_TITLE.title),
     });
 
     await this.tools

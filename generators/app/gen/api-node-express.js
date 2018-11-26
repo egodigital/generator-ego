@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const fs = require('fs');
-const htmlEntities = require('html-entities').AllHtmlEntities;
 
 function createPackageJson() {
     return {
@@ -60,8 +59,6 @@ function createPackageJson() {
  * A generator for Node.js based APIs (Express).
  */
 exports.run = async function() {
-    const HTML = new htmlEntities();
-
     const TEMPLATES_DIR = this.templatePath('api-node-express');
 
     const NAME_AND_TITLE = await this.tools
@@ -108,7 +105,8 @@ exports.run = async function() {
 
     this.log(`Setting up 'README.md' ...`);
     this.fs.copyTpl(TEMPLATES_DIR + '/README.md', OUT_DIR + '/README.md', {
-        'title': HTML.encode(NAME_AND_TITLE.title),
+        'title': this.tools
+            .encodeHtml(NAME_AND_TITLE.title),
     });
 
     await this.tools

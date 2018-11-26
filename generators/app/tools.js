@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const fs = require('fs');
+const htmlEntities = require('html-entities').AllHtmlEntities;
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
 
@@ -226,6 +227,21 @@ module.exports = class {
             String(outDir) + '/.gitignore',
             entries.join("\n"),
             'utf8'
+        );
+    }
+
+    /**
+     * Encodes a string for HTML output.
+     *
+     * @param {string} str The input string.
+     * 
+     * @return {string} The encoded string.
+     */
+    encodeHtml(str) {
+        const HTML = new htmlEntities();
+
+        return HTML.encode(
+            String(str)
         );
     }
 
