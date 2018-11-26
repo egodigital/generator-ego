@@ -148,6 +148,34 @@ module.exports = class {
     }
 
     /**
+     * Asks for opening Visual Studio Code for a specific directory.
+     *
+     * @param {string} dir The directory (or file) to open.
+     * @param {Array} [files] One or more additional file to open.
+     */
+    async askForOpenVSCode(dir, files) {
+        const OPEN_VSCODE = (await this.generator.prompt([{
+            type: 'confirm',
+            name: 'ego_confirm',
+            message: 'Open Visual Studio Code?',
+            default: true,
+        }]))['ego_confirm'];
+
+        if (!files) {
+            files = [];
+        }
+
+        if (OPEN_VSCODE) {
+            this.generator
+                .spawnCommand('code', [ dir ].concat(files));
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Copies all files from a source directory to a destination.
      *
      * @param {string} from The source directory.
@@ -155,9 +183,34 @@ module.exports = class {
      */
     copyAll(from, to) {
         this.log(`Copying files to '${ to }' ...`);
+    
         this.generator
             .fs
             .copy(from + '/**', to);
+    }
+
+    /**
+     * Creates a '.env' file in a specific directory.
+     *
+     * @param {string} outDir The directory where to create the file to.
+     * @param {Object} values Key-value pair of variables. 
+     */
+    createEnv(outDir, values) {
+        this.log(`Creating '.env' ...`);
+
+        const LINES = [];
+        for (const KEY in values) {
+            LINES.push(
+                `${String(KEY).toUpperCase().trim()}=${String(values[KEY])}`
+            );
+        }
+        LINES.push('');
+
+        fs.writeFileSync(
+            String(outDir) + '/.env',
+            LINES.join("\n"),
+            'utf8'
+        );
     }
 
     /**
@@ -169,10 +222,11 @@ module.exports = class {
     createGitIgnore(outDir, entries) {
         this.log(`Creating '.gitignore' ...`);
 
-        this.generator
-            .fs
-            .write(String(outDir) + '/.gitignore',
-                   entries.join("\n"));
+        fs.writeFileSync(
+            String(outDir) + '/.gitignore',
+            entries.join("\n"),
+            'utf8'
+        );
     }
 
     /**

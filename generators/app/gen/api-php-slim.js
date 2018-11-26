@@ -14,11 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const fs = require('fs');
-const path = require('path');
-
 /**
- * A test generator.
+ * A generator for PHP based APIs (Slim).
  */
 exports.run = async function() {
     const TEMPLATES_DIR = this.templatePath('api-php-slim');
@@ -48,4 +45,7 @@ exports.run = async function() {
 
     await this.tools
         .askForGitInit(OUT_DIR);
+
+    await this.tools
+        .askForOpenVSCode(OUT_DIR);
 };

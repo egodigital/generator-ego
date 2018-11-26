@@ -14,16 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const fs = require('fs');
-const HtmlEntities = require('html-entities').AllHtmlEntities;
-const path = require('path');
-const sanitizeFilename = require('sanitize-filename');
+const htmlEntities = require('html-entities').AllHtmlEntities;
 
 /**
- * A test generator.
+ * A HTML 5 generator.
  */
 exports.run = async function() {
-    const HTML = new HtmlEntities();
+    const HTML = new htmlEntities();
 
     const TEMPLATES_DIR = this.templatePath('html5');
 
@@ -46,4 +43,7 @@ exports.run = async function() {
 
     await this.tools
         .askForGitInit(OUT_DIR);
+
+    await this.tools
+        .askForOpenVSCode(OUT_DIR);
 };
