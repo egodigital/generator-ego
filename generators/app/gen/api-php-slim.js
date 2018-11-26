@@ -16,7 +16,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const sanitizeFilename = require('sanitize-filename');
 
 /**
  * A test generator.
@@ -24,47 +23,29 @@ const sanitizeFilename = require('sanitize-filename');
 exports.run = async function() {
     const TEMPLATES_DIR = this.templatePath('api-php-slim');
 
-    const NAME = (await this.prompt([{
-        type: 'input',
-        name: 'api-php-slim_name',
-        message: 'Enter the NAME of your project:',
-        validate: (val) => {
-            return '' !== String(val).trim();
-        }
-    }]))['api-php-slim_name'].trim();
-
-    let title = (await this.prompt([{
-        type: 'input',
-        name: 'api-php-slim_title',
-        message: "Enter the project's TITLE:",
-        default: NAME,
-    }]))['api-php-slim_title'].trim();
-
-    if ('' === title) {
-        title = NAME;
-    }
-
-    const OUT_DIR = path.resolve(
-        path.join(
-            this.destinationPath(
-                sanitizeFilename(NAME)
-            ),
-        )
-    );
-
-    if (fs.existsSync(OUT_DIR)) {
-        this.log('[ERROR] Target directory already exists.');
+    const NAME_AND_TITLE = await this.tools
+        .askForNameAndTitle();
+    if (!NAME_AND_TITLE) {
         return;
     }
 
-    fs.mkdirSync(OUT_DIR);
-    this.log(`Created target directory '${ path.basename(OUT_DIR) }'.`);
+    const OUT_DIR = NAME_AND_TITLE.mkDestinationDir();
 
-    this.log(`Copying files to '${ path.basename(OUT_DIR) }' ...`);
-    this.fs.copy(TEMPLATES_DIR + '/**', OUT_DIR);
+    // copy all files
+    this.tools
+        .copyAll(TEMPLATES_DIR, OUT_DIR);
 
+    // .gitignore
+    this.tools.createGitIgnore(OUT_DIR, [
+        'vendor/'
+    ]);
+
+    // Composer
     this.log(`Running Composer ...`);
     this.spawnCommandSync('composer', ['require', 'slim/slim', '^3.0'], {
         'cwd': OUT_DIR
     });
+
+    await this.tools
+        .askForGitInit(OUT_DIR);
 };

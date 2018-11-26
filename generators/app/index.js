@@ -21,10 +21,13 @@ const gen_html5 = require('./gen/html5');
 const Generator = require('yeoman-generator');
 const os = require('os');
 const path = require('path');
+const tools = require('./tools');
 
 module.exports = class extends Generator {
     constructor(args, opts) {
         super(args, opts);
+
+        this.tools = new tools(this);
     }
 
     async prompting() {

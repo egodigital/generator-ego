@@ -27,46 +27,23 @@ exports.run = async function() {
 
     const TEMPLATES_DIR = this.templatePath('html5');
 
-    const NAME = (await this.prompt([{
-        type: 'input',
-        name: 'html5_name',
-        message: 'Enter the NAME of your project:',
-        validate: (val) => {
-            return '' !== String(val).trim();
-        }
-    }]))['html5_name'].trim();
-
-    let title = (await this.prompt([{
-        type: 'input',
-        name: 'html5_title',
-        message: "Enter the project's TITLE:",
-        default: NAME,
-    }]))['html5_title'].trim();
-
-    if ('' === title) {
-        title = NAME;
-    }
-
-    const OUT_DIR = path.resolve(
-        path.join(
-            this.destinationPath(
-                sanitizeFilename(NAME)
-            ),
-        )
-    );
-
-    if (fs.existsSync(OUT_DIR)) {
-        this.log('[ERROR] Target directory already exists.');
+    const NAME_AND_TITLE = await this.tools
+        .askForNameAndTitle();
+    if (!NAME_AND_TITLE) {
         return;
     }
 
-    fs.mkdirSync(OUT_DIR);
-    this.log(`Created target directory '${ path.basename(OUT_DIR) }'.`);
+    const OUT_DIR = NAME_AND_TITLE.mkDestinationDir();
 
-    this.log(`Copying files to '${ path.basename(OUT_DIR) }' ...`);
-    this.fs.copy(TEMPLATES_DIR + '/**', OUT_DIR);
+    // copy all files
+    this.tools
+        .copyAll(TEMPLATES_DIR, OUT_DIR);
 
+    this.log(`Setting up 'index.html' ...`);
     this.fs.copyTpl(TEMPLATES_DIR + '/index.html', OUT_DIR + '/index.html', {
-        'title': HTML.encode(title),
+        'title': HTML.encode(NAME_AND_TITLE.title),
     });
+
+    await this.tools
+        .askForGitInit(OUT_DIR);
 };
