@@ -18,6 +18,7 @@ const ejs = require('ejs');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const htmlEntities = require('html-entities').AllHtmlEntities;
+const os = require('os');
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
 
@@ -297,6 +298,34 @@ module.exports = class {
 
         return HTML.encode(
             String(str)
+        );
+    }
+
+    /**
+     * Returns a full, joined path relative to the '.generator-ego'
+     * inside the current user's home directory.
+     * 
+     * @param {string[]} [paths] The paths (parts) to join.
+     * 
+     * @return {string} The full, joined path.
+     */
+    homePath() {
+        const ARGS = [];
+        for (let i = 0; i < arguments.length; i++) {
+            ARGS.push(
+                String(arguments[i])
+            );
+        }
+
+        const GENERATOR_DIR = path.resolve(
+            path.join(
+                os.homedir(), '.generator-ego'
+            )
+        );
+
+        return path.resolve(
+            path.join
+                .apply(path, [ GENERATOR_DIR ].concat( ARGS ))
         );
     }
 

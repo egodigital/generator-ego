@@ -28,7 +28,7 @@ from your console.
 
 ## Additional generators
 
-Create a `yo.js` file inside your home directory and use the following skeleton:
+Create a `yo-ego.js` file inside your home directory and use the following skeleton:
 
 ```javascript
 // the keys are the display texts, which 
@@ -57,6 +57,8 @@ exports.generators = {
 };
 ```
 
+Have a look at the `external-generator.example.js` file to get an idea, how to create a generator (file).
+
 ## Contribute
 
 To contribute, you can [open an issue](https://github.com/egodigital/generator-ego/issues) and/or fork this repository.
@@ -66,7 +68,7 @@ To work with the code:
 * clone this repository
 * create and change to a new branch, like `git checkout -b my_new_feature`
 * run `npm install` from your project folder to install dependencies
-* run `npm link` from your project folder, so you are able to test your changes
+* run `npm link` from your project folder, so you are able to test your changes (this might require admin rights, like `sudo`, e.g.)
 * to test your changes, run `yo ego`
 * commit your changes to your new branch and sync it with your forked GitHub repo
 * make a [pull request](https://github.com/egodigital/generator-ego/pulls)

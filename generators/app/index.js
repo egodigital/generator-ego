@@ -67,12 +67,12 @@ module.exports = class extends Generator {
 
         const CUSTOM_GENERATORS_FILE = path.resolve(
             path.join(
-                os.homedir(), 'yo.js'
+                os.homedir(), 'yo-ego.js'
             )
         );
 
         // check for custom / additional generatoras
-        // in 'yo.js' file in home directory
+        // in 'yo-ego.js' file in home directory
         const CUSTOM_CHOISES = [];
         if (fs.existsSync(CUSTOM_GENERATORS_FILE)) {
             const STATS = fs.lstatSync(CUSTOM_GENERATORS_FILE);
