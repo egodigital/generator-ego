@@ -52,16 +52,16 @@ module.exports = class extends Generator {
 
         // build-in generators
         const BUILDIN_CHOICES = [{
-            name: "🧰  API (Node - Express ^4.0)",
+            name: "🛠  API (Node - Express ^4.0)",
             value: gen_api_node_express.run,
         }, {
-            name: "🧰  API (PHP - Slim ^3.0)",
+            name: "🛠  API (PHP - Slim ^3.0)",
             value: gen_api_php_slim.run,
         }, {
-            name: "🧰  APP (Electron - MD Bootstrap)",
+            name: "🖥  App (Electron - MD Bootstrap)",
             value: gen_api_electron_mdbootstrap.run,
         }, {
-            name: "🧰  HTML 5",
+            name: "🌐  HTML 5",
             value: gen_html5.run,
         }];
 

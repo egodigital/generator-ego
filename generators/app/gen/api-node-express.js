@@ -100,6 +100,7 @@ exports.run = async function() {
         'LOCAL_DEVELOPMENT': 'true',
     });
 
+    // README
     this.tools.copyREADME(
         TEMPLATES_DIR, OUT_DIR, {
             title: NAME_AND_TITLE.title,

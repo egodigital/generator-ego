@@ -43,6 +43,13 @@ exports.run = async function() {
         'cwd': OUT_DIR
     });
 
+    // README
+    this.tools.copyREADME(
+        TEMPLATES_DIR, OUT_DIR, {
+            title: NAME_AND_TITLE.title,
+        }
+    );
+
     await this.tools
         .askForGitInit(OUT_DIR);
 

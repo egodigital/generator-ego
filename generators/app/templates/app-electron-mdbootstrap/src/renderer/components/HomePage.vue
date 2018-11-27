@@ -10,7 +10,7 @@
 <script>
 export default {
   name: 'HomePage',
-  data () {
+  data() {
     return {
       msg: 'Welcome to Your MDB Vue.js App'
     };

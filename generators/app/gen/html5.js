@@ -38,6 +38,13 @@ exports.run = async function() {
             .encodeHtml(NAME_AND_TITLE.title),
     });
 
+    // README
+    this.tools.copyREADME(
+        TEMPLATES_DIR, OUT_DIR, {
+            title: NAME_AND_TITLE.title,
+        }
+    );
+
     await this.tools
         .askForGitInit(OUT_DIR);
 

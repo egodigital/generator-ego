@@ -1,0 +1,11 @@
+The following files and contents:
+
+- generators/app/templates/app-electron-mdbootstrap/static/ego_digital_lg_md_sm.svg
+
+are properties of:
+
+    e.GO Digital GmbH
+    Campus-Boulevard 30
+    52074 Aachen
+    Germany
+    Mail: hello@e-go-digital.com

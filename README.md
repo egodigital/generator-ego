@@ -72,3 +72,9 @@ To work with the code:
 * to test your changes, run `yo ego`
 * commit your changes to your new branch and sync it with your forked GitHub repo
 * make a [pull request](https://github.com/egodigital/generator-ego/pulls)
+
+## Copyright
+
+### app-electron-mdbootstrap
+
+That template makes use of free version of [MD Bootstrap](https://mdbootstrap.com/vue) and is based on [electron-vue](https://github.com/SimulatedGREG/electron-vue).
