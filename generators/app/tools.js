@@ -287,6 +287,62 @@ module.exports = class {
     }
 
     /**
+     * Downloads a Git repository to a destination.
+     *
+     * @param {String} repo The (source of the) repository.
+     * @param {String} dest The destination folder.
+     */
+    async downloadGitRepo(repo, dest) {
+        repo = String(repo);
+        
+        dest = path.resolve(
+            String(dest)
+        );
+
+        const GIT_FOLDER = path.resolve(
+            path.join(
+                dest, '.git'
+            )
+        );
+
+        // first clone ...
+        this.log(`Downloading Git repo from '${repo}' ...`);
+        this.generator.spawnCommandSync('git', ['clone', repo, '.'], {
+            'cwd': dest
+        });
+
+        // ... then remove '.git' folder
+        fsExtra.removeSync(GIT_FOLDER);
+
+        const YO_EGO_FILE = path.resolve(
+            path.join(
+                dest, '.yo-ego.js'
+            )
+        );
+        if (fs.existsSync(YO_EGO_FILE)) {
+            this.log(`Executing Git repo hooks in '${path.basename(YO_EGO_FILE)}' ...`);
+
+            delete require.cache[YO_EGO_FILE];
+
+            const YO_EGO_MODULE = require(YO_EGO_FILE);
+            if (YO_EGO_MODULE) {
+                if (YO_EGO_MODULE.downloaded) {
+                    await Promise.resolve(
+                        YO_EGO_MODULE.downloaded
+                            .apply(this, [{
+                                dir: dest,
+                                generator: this,
+                                repository: repo,
+                            }])
+                    );
+                }
+            }
+
+            fs.unlinkSync(YO_EGO_FILE);
+        }
+    }
+
+    /**
      * Encodes a string for HTML output.
      *
      * @param {string} str The input string.

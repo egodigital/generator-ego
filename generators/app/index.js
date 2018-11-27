@@ -16,9 +16,9 @@
 
 const chalk = require('chalk');
 const fs = require('fs');
-const gen_api_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
 const gen_api_node_express = require('./gen/api-node-express');
 const gen_api_php_slim = require('./gen/api-php-slim');
+const gen_app_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
 const gen_html5 = require('./gen/html5');
 const Generator = require('yeoman-generator');
 const os = require('os');
@@ -59,7 +59,7 @@ module.exports = class extends Generator {
             value: gen_api_php_slim.run,
         }, {
             name: "🖥  App (Electron - MD Bootstrap)",
-            value: gen_api_electron_mdbootstrap.run,
+            value: gen_app_electron_mdbootstrap.run,
         }, {
             name: "🌐  HTML 5",
             value: gen_html5.run,
