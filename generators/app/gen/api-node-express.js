@@ -101,7 +101,9 @@ exports.run = async function() {
     });
 
     this.tools.copyREADME(
-        TEMPLATES_DIR, OUT_DIR
+        TEMPLATES_DIR, OUT_DIR, {
+            title: NAME_AND_TITLE.title,
+        }
     );
 
     await this.tools
