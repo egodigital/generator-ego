@@ -39,7 +39,7 @@ function createPackageJson() {
             "@types/node": "8.10.30",
             "assert": "^1.4.1",
             "mocha": "^5.2.0",
-            "nodemon": "^1.18.6",
+            "nodemon": "^1.18.7",
             "supertest": "^3.3.0",
             "ts-node": "^7.0.1",
             "tslint": "^5.11.0",
@@ -84,10 +84,7 @@ exports.run = async function() {
     );
 
     // npm install
-    this.log(`Installing NPM modules ...`);
-    this.spawnCommandSync('npm', ['install'], {
-        'cwd': OUT_DIR
-    });
+    this.tools.runNPMInstall(OUT_DIR);
 
     // .gitignore
     this.tools.createGitIgnore(OUT_DIR, [
@@ -103,11 +100,9 @@ exports.run = async function() {
         'LOCAL_DEVELOPMENT': 'true',
     });
 
-    this.log(`Setting up 'README.md' ...`);
-    this.fs.copyTpl(TEMPLATES_DIR + '/README.md', OUT_DIR + '/README.md', {
-        'title': this.tools
-            .encodeHtml(NAME_AND_TITLE.title),
-    });
+    this.tools.copyREADME(
+        TEMPLATES_DIR, OUT_DIR
+    );
 
     await this.tools
         .askForGitInit(OUT_DIR);

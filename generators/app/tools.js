@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const ejs = require('ejs');
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const htmlEntities = require('html-entities').AllHtmlEntities;
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
@@ -184,10 +186,63 @@ module.exports = class {
      */
     copyAll(from, to) {
         this.log(`Copying files to '${ to }' ...`);
-    
-        this.generator
-            .fs
-            .copy(from + '/**', to);
+
+        this.copyAllInner(from, to);
+    }
+
+    copyAllInner(from, to) {
+        from = path.resolve(
+            from
+        );
+        to = path.resolve(
+            to
+        );
+
+        if (!fsExtra.existsSync(to)) {
+            fsExtra.mkdirSync(to);
+        }
+
+        for (const ITEM of fsExtra.readdirSync(from)) {
+            const FROM_ITEM = path.resolve(
+                path.join(
+                    from, ITEM
+                )
+            );
+            const TO_ITEM = path.resolve(
+                path.join(
+                    to, ITEM
+                )
+            );
+
+            const STAT = fsExtra.statSync(FROM_ITEM);
+            if (STAT.isDirectory()) {
+                this.copyAllInner(FROM_ITEM, TO_ITEM);
+            } else {
+                fsExtra.copySync(FROM_ITEM, TO_ITEM);
+            }
+        }
+    }
+
+    /**
+     * Copies a rendered README.md file to a destination.
+     *
+     * @param {string} from The source directory.
+     * @param {string} to The destination directory.
+     * @param {any} [data] Data for rendering.
+     */
+    copyREADME(from, to, data) {
+        this.log(`Setting up 'README.md' ...`);
+
+        const CONTENT = fs.readFileSync(
+            from + '/README.md',
+            'utf8'
+        );
+
+        fs.writeFileSync(
+            to + '/README.md',
+            ejs.render(CONTENT, data),
+            'utf8'
+        );
     }
 
     /**
@@ -265,5 +320,17 @@ module.exports = class {
         return this.generator
             .prompt
             .apply(this.generator, arguments);
+    }
+
+    /**
+     * Runs 'npm install' inside a directory.
+     * 
+     * @param {string} dir The directory where to execute the command in.
+     */
+    runNPMInstall(dir) {
+        this.log(`Installing NPM modules ...`);
+        this.generator.spawnCommandSync('npm', ['install'], {
+            'cwd': dir
+        });
     }
 }
