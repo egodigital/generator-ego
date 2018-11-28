@@ -40,7 +40,7 @@ exports.generators = {
         // 'this' contains the underlying Generator
         // instance: http://yeoman.io/generator/Generator.html
 
-        console.log(
+        this.log(
             'From my 1st generator'
         );
     },
