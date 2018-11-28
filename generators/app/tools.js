@@ -359,7 +359,7 @@ module.exports = class {
 
     /**
      * Returns a full, joined path relative to the '.generator-ego'
-     * inside the current user's home directory.
+     * folder, inside the current user's home directory.
      * 
      * @param {string[]} [paths] The paths (parts) to join.
      * 

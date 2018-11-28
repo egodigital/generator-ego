@@ -38,16 +38,23 @@ module.exports = class extends Generator {
         );
 
         process.stdout.write(
+            `${chalk.reset()}`
+        );
+        process.stdout.write(
             `${chalk.white('generator-ego ' + PACKAGE_JSON.version)}${os.EOL}`
         );
         process.stdout.write(
-            `${chalk.blue('e') + chalk.grey('.') + chalk.blue('GO') + chalk.grey(' Digital GmbH <') + chalk.white('hello@e-go-digital.com') + chalk.grey('>')}${os.EOL}`
-        );
-        process.stdout.write(
-            `${chalk.white(PACKAGE_JSON.description)}${os.EOL}`
+            `${chalk.reset(PACKAGE_JSON.description)}${os.EOL}`
         );
         process.stdout.write(
             `${os.EOL}`
+        );
+        process.stdout.write(
+            `${chalk.blueBright('e') + chalk.reset('.') + chalk.blueBright('GO') + chalk.reset(' Digital GmbH <') + chalk.white('https://e-go-digital.com') + chalk.reset('>')}${os.EOL}`
+        );
+        
+        process.stdout.write(
+            `${os.EOL}${chalk.reset()}`
         );
 
         // build-in generators
