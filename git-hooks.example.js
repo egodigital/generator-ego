@@ -2,7 +2,7 @@ const fs = require('fs');
 
 exports.downloaded = async function(e) {
     // 'this' contains the underlying Generator
-    // instance based on: http://yeoman.io/generator/Generator.html
+    // instance based on: https://github.com/egodigital/generator-ego/blob/master/generators/app/index.js
 
     fs.writeFileSync(
         e.dir + '/test.txt',

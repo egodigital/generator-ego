@@ -26,6 +26,15 @@ yo ego
 
 from your console.
 
+## Build in templates
+
+| Name  | Description |
+| ------------- | ------------- |
+| `api-node-express` | Creates a REST api host based on [express](https://www.npmjs.com/package/express) |
+| `api-php-slim` | Creates a REST api host based on [Slim](https://www.slimframework.com/) |
+| `app-electron-mdbootstrap` | Creates an [Electron](https://github.com/SimulatedGREG/electron-vue) app based on [MD Bootstrap for Vue](https://mdbootstrap.com/docs/vue/) |
+| `html5` | Creates HTML page based on [HTML 5 Boilerplate](https://html5boilerplate.com/) |
+
 ## Additional generators
 
 Create a `yo-ego.js` file inside your home directory and use the following skeleton:
@@ -38,7 +47,7 @@ exports.generators = {
 
     'My first generator': async function() {
         // 'this' contains the underlying Generator
-        // instance: http://yeoman.io/generator/Generator.html
+        // instance: https://github.com/egodigital/generator-ego/blob/master/generators/app/index.js
 
         this.log(
             'From my 1st generator'
@@ -58,6 +67,10 @@ exports.generators = {
 ```
 
 Have a look at the `external-generator.example.js` file to get an idea, how to create a generator (file).
+
+## Documentation
+
+[Have a look at the wiki](https://github.com/egodigital/generator-ego/wiki) to learn more about that generator.
 
 ## Contribute
 

@@ -18,6 +18,7 @@ const ejs = require('ejs');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const htmlEntities = require('html-entities').AllHtmlEntities;
+const got = require('got');
 const os = require('os');
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
@@ -286,6 +287,42 @@ module.exports = class {
             entries.join("\n"),
             'utf8'
         );
+    }
+
+    /**
+     * Downloads a file.
+     *
+     * @param {String} url The URL of the file.
+     * 
+     * @return {Buffer} The downloaded data.
+     */
+    async download(url) {
+        url = String(url);
+
+        this.log(`Downloading file '${ url }' ...`);
+        const RESPONSE = await got(url);
+
+        if (RESPONSE.statusCode >= 400 && RESPONSE.statusCode < 500) {
+            throw new Error(`Client error: [${ RESPONSE.statusCode }] '${ RESPONSE.statusMessage }'`);
+        }
+
+        if (RESPONSE.statusCode >= 500 && RESPONSE.statusCode < 600) {
+            throw new Error(`Server error: [${ RESPONSE.statusCode }] '${ RESPONSE.statusMessage }'`);
+        }
+
+        if (RESPONSE.statusCode >= 600) {
+            throw new Error(`Unknown error: [${ RESPONSE.statusCode }] '${ RESPONSE.statusMessage }'`);
+        }
+
+        if (204 == RESPONSE.statusCode) {
+            return Buffer.alloc(0);
+        }
+
+        if (200 != RESPONSE.statusCode) {
+            throw new Error(`Unexpected response: [${ RESPONSE.statusCode }] '${ RESPONSE.statusMessage }'`);
+        }
+
+        return RESPONSE.body;
     }
 
     /**

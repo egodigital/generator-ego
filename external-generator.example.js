@@ -1,7 +1,7 @@
 
 exports.run = async function() {
     // 'this' contains the underlying Generator
-    // instance based on: http://yeoman.io/generator/Generator.html
+    // instance based on: https://github.com/egodigital/generator-ego/blob/master/generators/app/index.js
     // 
     // s. ./index.js
     
