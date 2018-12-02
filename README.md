@@ -33,6 +33,7 @@ from your console.
 | `api-node-express` | Creates a REST api host based on [express](https://www.npmjs.com/package/express) |
 | `api-php-slim` | Creates a REST api host based on [Slim](https://www.slimframework.com/) |
 | `app-electron-mdbootstrap` | Creates an [Electron](https://github.com/SimulatedGREG/electron-vue) app based on [MD Bootstrap for Vue](https://mdbootstrap.com/docs/vue/) |
+| `app-reactnative-blank` | Creates a blank [React Native](https://facebook.github.io/react-native/) app |
 | `html5` | Creates HTML page based on [HTML 5 Boilerplate](https://html5boilerplate.com/) |
 
 ## Additional generators

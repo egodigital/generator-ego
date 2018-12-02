@@ -19,6 +19,7 @@ const fs = require('fs');
 const gen_api_node_express = require('./gen/api-node-express');
 const gen_api_php_slim = require('./gen/api-php-slim');
 const gen_app_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
+const gen_app_reactnative_blank = require('./gen/app-reactnative-blank');
 const gen_html5 = require('./gen/html5');
 const Generator = require('yeoman-generator');
 const os = require('os');
@@ -67,6 +68,9 @@ module.exports = class extends Generator {
         }, {
             name: "🖥  App (Electron - MD Bootstrap)",
             value: gen_app_electron_mdbootstrap.run,
+        }, {
+            name: "📱  App (React Native - blank)",
+            value: gen_app_reactnative_blank.run,
         }, {
             name: "🌐  HTML 5",
             value: gen_html5.run,
