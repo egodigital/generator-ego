@@ -21,6 +21,8 @@ const htmlEntities = require('html-entities').AllHtmlEntities;
 const os = require('os');
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
+const xmlJS = require('xml-js');
+const zip = require('node-zip');
 
 /**
  * Class with tools for the 'tools' property of a generator instance.
@@ -358,6 +360,33 @@ module.exports = class {
     }
 
     /**
+     * Creates an object from XML data.
+     *
+     * @param {String|Buffer} xml The raw XML data.
+     * @param {Boolean} [compact] Returns compact data or not. Default: (false)
+     * 
+     * @return {Object} The XML object.
+     */
+    fromXml(xml, compact) {
+        if (arguments.length < 2) {
+            compact = false;
+        }
+
+        if (Buffer.isBuffer(xml)) {
+            xml = xml.toString('utf8');
+        } else {
+            xml = String(xml);
+        }
+
+        return JSON.parse(
+            xmlJS.xml2json(xml, {
+                compact: compact,
+                spaces: 2,
+            })
+        );
+    }
+
+    /**
      * Returns a full, joined path relative to the '.generator-ego'
      * folder, inside the current user's home directory.
      * 
@@ -399,12 +428,54 @@ module.exports = class {
     }
 
     /**
+     * Creates a folder inside the destination path.
+     *
+     * @param {String} name The name of the target folder.
+     * @param {Boolean} [throwIfExist] Throw an exception if folder already exists or not. Default: true
+     * 
+     * @return {String} The path of the created folder.
+     */
+    mkDestinationDir(name, throwIfExist) {
+        const DEST_DIR = path.resolve(
+            path.join(
+                this.generator.destinationPath(
+                    sanitizeFilename(
+                        String(name).trim()
+                    )
+                ),
+            )
+        );
+
+        if (throwIfExist) {
+            if (fs.existsSync(DEST_DIR)) {
+                throw new Error('[ERROR] Destination directory already exists!');
+            }
+        }
+
+        fs.mkdirSync(DEST_DIR);
+        this.log(`Created destination directory '${ DEST_DIR }'.`);
+
+        return DEST_DIR;
+    }
+
+    /**
      * Short "path" to 'prompt()' method of underlying generator.
      */
     prompt() {
         return this.generator
             .prompt
             .apply(this.generator, arguments);
+    }
+
+    /**
+     * Opens a module in generator's context.
+     *
+     * @param {String} id The ID/path of the module.
+     * 
+     * @return {Object} The module.
+     */
+    require(id) {
+        return require(id);
     }
 
     /**
@@ -416,6 +487,42 @@ module.exports = class {
         this.log(`Installing NPM modules ...`);
         this.generator.spawnCommandSync('npm', ['install'], {
             'cwd': dir
+        });
+    }
+
+    /**
+     * Creates a XML string from an object (as opened with 'fromXml()' function).
+     *
+     * @param {Object} obj The XML as (JSON) object.
+     * @param {Number} [spaces] The number of spaces for a tab. Default: 4
+     * 
+     * @return {String} The XML string.
+     */
+    toXml(obj, spaces) {
+        if (arguments.length < 2) {
+            spaces = 4;
+        }
+
+        return xmlJS.json2xml(obj, {
+            compact: false,
+            spaces: spaces,
+        });
+    }
+
+    /**
+     * Unzips a file/container.
+     * 
+     * @param {String|Buffer} file The path to the file or its content.
+     * 
+     * @return {Object} The object that represents the ZIP container.
+     */
+    unzip(file) {
+        if (!Buffer.isBuffer(file)) {
+            file = fsExtra.readFileSync(String(file));
+        }
+
+        return zip(file, {
+            base64: false,
         });
     }
 }
