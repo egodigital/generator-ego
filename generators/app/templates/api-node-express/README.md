@@ -10,6 +10,8 @@ npm install
 npm run dev
 
 # start in production mode
+# by building/updating the source first
+npm build
 npm start
 ```
 
