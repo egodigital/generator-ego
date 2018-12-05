@@ -2,6 +2,8 @@
 
 A [Yeoman](http://yeoman.io/) generator with useful general sub generators and the possibility to be expand it by JavaScript. 
 
+**The project is currently under heavy development! Feel free to [contribute](#contribute) and/or give us [your feedback](https://github.com/egodigital/generator-ego/issues).**
+
 ## Install
 
 First keep sure to have Yeoman installed:
