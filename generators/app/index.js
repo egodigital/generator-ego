@@ -93,7 +93,7 @@ module.exports = class extends Generator {
                     const GENERATORS = CUSTOM_GENERATORS_SCRIPT.generators;
                     if (GENERATORS) {
                         for (const OPTION in GENERATORS) {
-                            const NAME = `🧩  ${OPTION}`;
+                            const NAME = `🔌  ${OPTION}`;
 
                             const GENERATOR_FUNC = GENERATORS[OPTION];
                             if ('function' === typeof GENERATOR_FUNC) {
