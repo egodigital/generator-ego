@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/generator-ego.svg)](https://www.npmjs.com/package/generator-ego)
+
 # generator-ego
 
 A [Yeoman](http://yeoman.io/) generator with useful general sub generators and the possibility to be expand it by JavaScript. 
