@@ -641,6 +641,70 @@ module.exports = class {
     }
 
     /**
+     * Prompts for an item of a (string) list.
+     *
+     * @param {String} message The message,
+     * @param {Array} list The list of items.
+     * @param {Object} [opts] Custom options.
+     * 
+     * @return {Promise<string>} The promise with the selected item.
+     */
+    async promptList(message, list, opts) {
+        if (arguments.length < 3) {
+            opts = {};
+        }
+
+        return (await this.prompt([{
+            'type': 'list',
+            'name': 'ego_item',
+            'message': String(message),
+            'choices': this.asArray(list),
+            'default': opts.default,
+        }]))['ego_item'];
+    }
+
+    /**
+     * Prompts for a string.
+     *
+     * @param {String} message The message,
+     * @param {Object} [opts] Custom options.
+     * 
+     * @return {Promise<string>} The promise with the input value.
+     */
+    async promptString(message, opts) {
+        if (arguments.length < 2) {
+            opts = {};
+        }
+
+        let validator = opts.validator;
+        if (validator) {
+            if (true === validator) {
+                validator = (val) => {
+                    return '' !== this.toStringSafe(val)
+                        .trim();
+                };
+            }
+        }
+
+        let defaultValue = this.toStringSafe(opts.default);
+
+        const PROMPT_OPTS = {
+            type: 'input',
+            name: 'ego_value',
+            message: this.toStringSafe(message),
+            validate: validator
+        };
+
+        if ('' !== defaultValue) {
+            PROMPT_OPTS.default = defaultValue;
+        }
+
+        return (await this.prompt([
+            PROMPT_OPTS
+        ]))['ego_value'];
+    }
+
+    /**
      * Opens a module in generator's context.
      *
      * @param {String} id The ID/path of the module.
@@ -661,6 +725,46 @@ module.exports = class {
         this.generator.spawnCommandSync('npm', ['install'], {
             'cwd': dir
         });
+    }
+
+    /**
+     * Converts a value to a string.
+     *
+     * @param {any} val The input value.
+     * @param {String} [defaultValue] The custom default value. Default: ''
+     * 
+     * @return {String} The output value.
+     */
+    toStringSafe(val, defaultValue) {
+        if (arguments.length < 2) {
+            defaultValue = '';
+        }
+
+        if (_.isString(val)) {
+            return val;
+        }
+
+        if (_.isNil(val)) {
+            return String(defaultValue);
+        }
+
+        try {
+            if (val instanceof Error) {
+                return `${val.message}
+
+${val.stack}`;
+            }
+    
+            if (_.isFunction(val['toString'])) {
+                return String(val.toString());
+            }
+    
+            if (_.isObject(val)) {
+                return JSON.stringify(val);
+            }
+        } catch (e) { }
+
+        return String(val);
     }
 
     /**
