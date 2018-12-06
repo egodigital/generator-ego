@@ -6,6 +6,9 @@
   "files": [
     "generators"
   ],
+  "scripts": {
+    "deploy": "npm install && npm publish"
+  },
   "keywords": [
     "yeoman-generator",
     "ego",
