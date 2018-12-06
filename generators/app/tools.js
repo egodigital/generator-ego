@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const _ = require('lodash');
 const ejs = require('ejs');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const htmlEntities = require('html-entities').AllHtmlEntities;
 const got = require('got');
+const minimatch = require('minimatch');
 const os = require('os');
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
@@ -36,6 +38,32 @@ module.exports = class {
      */
     constructor(generator) {
         this.generator = generator;
+    }
+
+    /**
+     * Keeps sure a value is an array.
+     * 
+     * @param {any} val The input value.
+     * @param {Boolean} [noEmpty] Remove items, which are (null) or (undefined). Default: (true)
+     * 
+     * @return {Array} The output value.
+     */
+    asArray(val, noEmpty) {
+        if (arguments.length < 2) {
+            noEmpty = true;
+        }
+
+        if (!Array.isArray(val)) {
+            val = [ val ];
+        }
+
+        return val.filter(x => {
+            if (noEmpty) {
+                return !_.isNil(x);
+            }
+
+            return true;
+        });
     }
 
     /**
@@ -183,6 +211,24 @@ module.exports = class {
     }
 
     /**
+     * Copies files from one destination to another by using patterns.
+     *
+     * @param {String} from The source directory.
+     * @param {String} to The target directory.
+     * @param {String|Array} [patterns] The (minimatch) patters, that describes, what elements to use. Default: '**'
+     * @param {String|Array} [excludes] The (minimatch) patters, that describes, what elements to exclude.
+     */
+    copy(from, to, patterns, excludes) {
+        this.log(`Copying files to '${ to }' ...`);
+
+        this.copyInner(from, to, {
+            'excludes': excludes,
+            'path': '/',
+            'patterns': patterns,
+        });
+    }
+
+    /**
      * Copies all files from a source directory to a destination.
      *
      * @param {string} from The source directory.
@@ -223,6 +269,81 @@ module.exports = class {
                 this.copyAllInner(FROM_ITEM, TO_ITEM);
             } else {
                 fsExtra.copySync(FROM_ITEM, TO_ITEM);
+            }
+        }
+    }
+
+    copyInner(from, to, opts) {
+        from = path.resolve(
+            from
+        );
+        to = path.resolve(
+            to
+        );
+
+        const INCLUDE_PATTERNS = this.asArray(opts.patterns)
+            .map(p => String(p))
+            .filter(p => '' !== p.trim());
+        if (INCLUDE_PATTERNS.length < 1) {
+            INCLUDE_PATTERNS.push('**');
+        }
+
+        for (const ITEM of fsExtra.readdirSync(from)) {
+            const FROM_ITEM = path.resolve(
+                path.join(
+                    from, ITEM
+                )
+            );
+
+            const STAT = fsExtra.statSync(FROM_ITEM);
+
+            // with and without beginning slashed
+            const FROM_ITEMS_RELATIVE = [
+                opts.path + ITEM
+            ];
+            FROM_ITEMS_RELATIVE.push(
+                FROM_ITEMS_RELATIVE[0].substr(1)
+            );
+            if (STAT.isDirectory()) {
+                // add expressions with ending slash
+
+                FROM_ITEMS_RELATIVE.push(
+                    FROM_ITEMS_RELATIVE[0] + '/'
+                );
+                FROM_ITEMS_RELATIVE.push(
+                    FROM_ITEMS_RELATIVE[1].substr(1) + '/'
+                );
+            }
+
+            const TO_ITEM = path.resolve(
+                path.join(
+                    to, ITEM
+                )
+            );
+
+            if (STAT.isDirectory()) {
+                this.copyInner(FROM_ITEM, TO_ITEM, {
+                    'excludes': opts.excludes,
+                    'path': opts.path + ITEM + '/',
+                    'patterns': opts.patterns,
+                });
+            } else {
+                if (!FROM_ITEMS_RELATIVE.some(x => this.doesMatch(x, opts.excludes))) {
+                    // not excluded
+                    if (FROM_ITEMS_RELATIVE.some(x => this.doesMatch(x, INCLUDE_PATTERNS))) {
+                        // included
+
+                        // keep sure the target directory exists
+                        const TARGET_DIR = path.dirname(
+                            TO_ITEM
+                        );
+                        if (!fsExtra.existsSync(TARGET_DIR)) {
+                            fsExtra.mkdirsSync(TARGET_DIR);
+                        }
+
+                        fsExtra.copySync(FROM_ITEM, TO_ITEM);
+                    }
+                }
             }
         }
     }
@@ -287,6 +408,21 @@ module.exports = class {
             entries.join("\n"),
             'utf8'
         );
+    }
+
+    /**
+     * Checks if a value matches a (minimatch) pattern.
+     *
+     * @param {any} val The input value.
+     * @param {String|Array} patterns One or more patterns.
+     */
+    doesMatch(val, patterns) {
+        val = String(val);
+
+        return this.asArray(patterns)
+            .map(p => String(p))
+            .filter(p => '' !== p.trim())
+            .some(p => minimatch(val, p));
     }
 
     /**
