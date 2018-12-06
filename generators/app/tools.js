@@ -78,7 +78,7 @@ module.exports = class {
             type: 'confirm',
             name: 'ego_confirm',
             message: 'Initialize a Git repository?',
-            default: false,
+            default: true
         }]))['ego_confirm'];
 
         if (DO_GIT_INIT) {
@@ -208,6 +208,45 @@ module.exports = class {
         }
 
         return false;
+    }
+
+    /**
+     * Compares two values.
+     *
+     * @param {any} x The left value.
+     * @param {any} y The right value.
+     * 
+     * @return {Number} 0 => both are equal; 1 => x > y; -1 => x < y
+     */
+    compareValues(x, y) {
+        return this.compareValuesBy(x, y,
+            i => i);
+    }
+
+    /**
+     * Compares two values by using a selector.
+     *
+     * @param {any} x The left value.
+     * @param {any} y The right value.
+     * @param {Function} selector The function that selects the values for x and y to compare.
+     * 
+     * @return {Number} 0 => both are equal; 1 => x > y; -1 => x < y
+     */
+    compareValuesBy(x, y, selector) {
+        const VAL_X = selector(x);
+        const VAL_Y = selector(y);
+
+        if (VAL_X !== VAL_Y) {
+            if (VAL_X < VAL_Y) {
+                return -1;
+            }
+
+            if (VAL_X > VAL_Y) {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -647,7 +686,7 @@ module.exports = class {
      * @param {Array} list The list of items.
      * @param {Object} [opts] Custom options.
      * 
-     * @return {Promise<string>} The promise with the selected item.
+     * @return {Promise<String>} The promise with the selected item.
      */
     async promptList(message, list, opts) {
         if (arguments.length < 3) {
@@ -657,10 +696,27 @@ module.exports = class {
         return (await this.prompt([{
             'type': 'list',
             'name': 'ego_item',
-            'message': String(message),
+            'message': this.toStringSafe(message),
             'choices': this.asArray(list),
             'default': opts.default,
         }]))['ego_item'];
+    }
+
+    /**
+     * Prompt for selecting items.
+     *
+     * @param {String} message The message.
+     * @param {Object} items The items, which can be selected.
+     * 
+     * @return {Promise<Array>} The promise with the array of selected values.
+     */
+    async promptMultiSelect(message, items) {
+        return (await this.prompt([{
+            'type': 'checkbox',
+            'name': 'ego_checked_items',
+            'message': this.toStringSafe(message),
+            'choices': items,
+        }]))['ego_checked_items'];
     }
 
     /**
@@ -725,6 +781,44 @@ module.exports = class {
         this.generator.spawnCommandSync('npm', ['install'], {
             'cwd': dir
         });
+    }
+
+    /**
+     * Creates a clone of an object and sort its keys.
+     *
+     * @param {any} obj The object.
+     * @param {Function} [keyComparer] The custom key comparer.
+     * 
+     * @return {any} The cloned object.
+     */
+    sortObjectByKey(obj, keyComparer) {
+        if (arguments.length < 2) {
+            keyComparer = (key) => {
+                return this.toStringSafe(key)
+                    .toLowerCase()
+                    .trim();
+            };
+        }
+
+        if (!obj) {
+            return obj;
+        }
+
+        // extract keys and sort them
+        const KEYS = Object.keys(
+            obj
+        ).sort((x, y) => {
+            return this.compareValuesBy(x, y,
+                keyComparer);
+        });
+
+        // create new object
+        const NEW_OBJ = {};
+        for (const K of KEYS) {
+            NEW_OBJ[K] = obj[K];
+        }
+
+        return NEW_OBJ;
     }
 
     /**
