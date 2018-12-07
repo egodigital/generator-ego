@@ -77,7 +77,7 @@ export function init(api: contracts.ApiContext, root: express.Router) {
         return egoose.sendResponse(res, {
             success: true,
             data: {
-                echo: req.body,  // is altready
+                echo: req.body,  // is already parsed as object
             },
         });
     });
