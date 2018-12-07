@@ -29,7 +29,7 @@ describe('v1 endpoints', function () {
     describe('root endpoints', function () {
         // [POST] /api/v1
         it('should return host information', async function () {
-            const RES = request(HOST)
+            const RES = await request(HOST)
                 .get('/api/v1')
                 .expect(200)
                 .set('Authorization', 'Bearer ' + process.env['API_KEY'])

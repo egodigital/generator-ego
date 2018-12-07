@@ -65,8 +65,8 @@ export function init(api: contracts.ApiContext, root: express.Router) {
      *     {
      *       "data": {
      *         "echo": {
-     *           "TM":"19790905",
-     *           "mk":"19790923"
+     *           "TM": "19790905",
+     *           "mk": "19790923"
      *         }
      *       },
      *       "errors": [],
