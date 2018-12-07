@@ -15,18 +15,69 @@ import * as express from 'express';
  * @param {express.Router} root The root endpoint.
  */
 export function init(api: contracts.ApiContext, root: express.Router) {
-    root.get('/', async function(req, res) {
+    /**
+     * @api {get} / Gets information about the host.
+     * @apiName GetHostInfo
+     * @apiGroup ExampleEndpoints
+     *
+     * @apiExample {curl} Example usage:
+     *     curl http://localhost:8080/api/v1
+     *
+     * @apiSuccess (200) {Object} hostInfo Host information.
+     *
+     * @apiSuccessExample {json} Example response:
+     *     HTTP/1.1 200 OK
+     *     Content-type: application/json; charset=utf-8
+     *
+     *     {
+     *       "data": {
+     *         "cpu_load": 0.07503075030750306,
+     *         "disk_space": 67104190464,
+     *         "disk_space_used": 48702963712,
+     *         "ram": 16673296384,
+     *         "ram_used": 13287170048
+     *       },
+     *       "errors": [],
+     *       "success": true
+     *     }
+     */
+    root.get('/', async function(req: contracts.ApiRequest, res) {
         return egoose.sendResponse(res, {
             success: true,
             data: await egoose.createMonitoringApiResult(),
         });
     });
 
-    root.post('/', express.json(), async function(req, res) {
+    /**
+     * @api {post} / Demonstrates how to handle JSON input data.
+     * @apiName EchoRequest
+     * @apiGroup ExampleEndpoints
+     *
+     * @apiExample {curl} Example usage:
+     *     curl http://localhost:8080/api/v1 -X POST -H "Content-Type: application/json" -d '{"TM":"19790905", "mk":"19790923"}'
+     *
+     * @apiSuccess (200) {Object} hostInfo Host information.
+     *
+     * @apiSuccessExample {json} Example response:
+     *     HTTP/1.1 200 OK
+     *     Content-type: application/json; charset=utf-8
+     *
+     *     {
+     *       "data": {
+     *         "echo": {
+     *           "TM":"19790905",
+     *           "mk":"19790923"
+     *         }
+     *       },
+     *       "errors": [],
+     *       "success": true
+     *     }
+     */
+    root.post('/', express.json(), async function(req: contracts.ApiRequest, res) {
         return egoose.sendResponse(res, {
             success: true,
             data: {
-                echo: req.body,
+                echo: req.body,  // is altready
             },
         });
     });

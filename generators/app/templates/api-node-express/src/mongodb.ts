@@ -22,6 +22,28 @@ export interface AccountDocument extends mongoose.Document {
 }
 
 /**
+ * A document from 'logs' collections.
+ */
+export interface LogsDocument extends mongoose.Document {
+    /**
+     * The message.
+     */
+    message?: string;
+    /**
+     * The tag.
+     */
+    tag?: string;
+    /**
+     * The timestamp.
+     */
+    time: Date;
+    /**
+     * The type.
+     */
+    type: number;
+}
+
+/**
  * A (MongoDB) database connection.
  */
 export class Database extends egoose.MongoDatabase {
@@ -43,6 +65,13 @@ export class Database extends egoose.MongoDatabase {
             user: process.env.MONGO_USER,
         });
     }
+
+    /**
+     * Gets the 'logs' collection.
+     */
+    public get Logs(): mongoose.Model<LogsDocument> {
+        return this.model('Logs');
+    }
 }
 
 /**
@@ -51,6 +80,7 @@ export class Database extends egoose.MongoDatabase {
 export function initDatabase() {
     mongoose.set('useCreateIndex', true);
 
+    // accounts
     egoose.MONGO_SCHEMAS['Accounts'] = new mongoose.Schema({
         email: {
             lowercase: true,
@@ -67,4 +97,29 @@ export function initDatabase() {
     });
     egoose.MONGO_SCHEMAS['Accounts']
           .index({ email: 1 }, { unique: true });
+
+    // logs
+    egoose.MONGO_SCHEMAS['Logs'] = new mongoose.Schema({
+        message: {
+            required: false,
+            type: String,
+        },
+        tag: {
+            lowercase: true,
+            required: false,
+            trim: true,
+            type: String,
+        },
+        time: {
+            type: Date,
+        },
+        type: {
+            required: false,
+            type: Number,
+        },
+    });
+    egoose.MONGO_SCHEMAS['Logs']
+          .index({ tag: 1 });
+    egoose.MONGO_SCHEMAS['Logs']
+          .index({ type: 1 });
 }

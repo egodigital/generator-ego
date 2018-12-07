@@ -122,7 +122,7 @@ module.exports = class extends Generator {
                                                                    .apply(this, []);
                                         },
                                     });
-                                })(String(GENERATOR_FUNC), NAME);
+                                })(this.tools.toStringSafe(GENERATOR_FUNC), NAME);
                             }
                         }
                     }

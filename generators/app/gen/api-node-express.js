@@ -101,15 +101,31 @@ exports.run = async function() {
         return;
     }
 
+    // create output directory
+    const OUT_DIR = this.tools
+        .mkDestinationDir(NAME_LOWER);
+
     const OPTS = {
         'auth_type': AUTH_TYPE,
         'database': DATABASE,
         'modules': MODULES,
     };
 
-    // create output directory
-    const OUT_DIR = this.tools
-        .mkDestinationDir(NAME_LOWER);
+    const FILES_TO_OPEN_IN_VSCODE = [
+        OUT_DIR + '/src/api/v1/root.ts',
+        OUT_DIR + '/src/index.ts',
+    ];
+    {
+        if (DB_MONGO === OPTS.database) {
+            FILES_TO_OPEN_IN_VSCODE.push(
+                OUT_DIR + '/src/mongodb.ts',
+            );
+        }
+
+        FILES_TO_OPEN_IN_VSCODE.push(
+            OUT_DIR + '/README.md',
+        );
+    }
 
     // copy all files
     {
@@ -177,8 +193,20 @@ exports.run = async function() {
         );
     }
 
-    // npm install
-    this.tools.runNPMInstall(OUT_DIR);
+    // apidoc.json
+    this.log(`Generating 'apidoc.json' ...`);
+    const APIDOC_JSON = createAPIDocJSON(OPTS);
+    {
+        APIDOC_JSON.name = NAME_INTERNAL;
+        APIDOC_JSON.description = DESCRIPTION;
+        APIDOC_JSON.title = `${ NAME } API`;
+
+        fs.writeFileSync(
+            OUT_DIR + '/apidoc.json',
+            JSON.stringify(APIDOC_JSON, null, 4),
+            'utf8'
+        );
+    }
 
     // .gitignore
     this.tools.createGitIgnore(OUT_DIR, [
@@ -218,16 +246,39 @@ exports.run = async function() {
         TEMPLATES_DIR, OUT_DIR, {
             name_internal: NAME_INTERNAL,
             title: NAME,
+            uses_api_key: [ AUTH_BEARER ].indexOf(OPTS.auth_type) > -1,
+            uses_mongodb: DB_MONGO === OPTS.database
         }
     );
+
+    // npm install
+    this.tools.runNPMInstall(OUT_DIR);
+
+    this.log(`Generating initial API documentation ...`);
+    this.spawnCommandSync('npm', ['run', 'apidoc'], {
+        'cwd': OUT_DIR
+    });
 
     await this.tools
         .askForGitInit(OUT_DIR);
 
-    await this.tools
-        .askForOpenVSCode(OUT_DIR, [ OUT_DIR + '/src/index.ts', OUT_DIR + '/src/api/v1/root.ts' ]);
+    await this.tools.askForOpenVSCode(
+        OUT_DIR,
+        FILES_TO_OPEN_IN_VSCODE,
+    );
 };
 
+
+// [CREATE] apidoc.json
+function createAPIDocJSON(opts) {
+    return {
+        "name": null,
+        "version": "0.0.1",
+        "description": null,
+        "title": null,
+        "url" : "http://localhost:8080"
+    };
+}
 
 // [CREATE] docker-compose.yml
 function createDockerComposeYml(opts) {
@@ -259,6 +310,7 @@ ${ DB_MONGO !== opts.database ? '' : `    depends_on:
 // [CREATE] contracts.ts
 function createContractsTS(opts) {
     const IMPORT_MAPPINGS = {
+        'egoose': '@egodigital/egoose',
         'express': 'express'
     };
 
@@ -301,13 +353,35 @@ export interface ApiContext {
      * Stores the current host instance.
      */
     readonly host: express.Express;
+
+    /**
+     * The global logger instance.
+     */
+    readonly logger: egoose.Logger;
 ${ withDatabaseCode }}
+
+/**
+ * An extended request context of an API call.
+ */
+export interface ApiRequest extends RequestWithLogger {
+}
+
+/**
+ * A request context with a logger instance.
+ */
+export interface RequestWithLogger extends express.Request {
+    /**
+     * The logger used for the request.
+     */
+    readonly logger: egoose.Logger;
+}
 ${ withDatabaseActionCode }`;
 }
 
 // [CREATE] index.ts
 function createIndexTS(opts) {
     const IMPORT_MAPPINGS = {
+        '_': 'lodash',
         'api_v1_root': './api/v1/root',
         'contracts': './contracts',
         'egoose': '@egodigital/egoose',
@@ -346,6 +420,7 @@ function createIndexTS(opts) {
 `;
     }
 
+    let logToDatabaseActionCode = '';
     let withDatabaseCode = '';
     if (DB_MONGO === opts.database) {
         withDatabaseCode = `
@@ -385,6 +460,32 @@ function createIndexTS(opts) {
             }
         },`;
 
+        logToDatabaseActionCode = `
+    // log to (MongoDB) database
+    LOGGER.addAction((ctx) => {
+        (async () => {
+            await API.withDatabase(async (db) => {
+                let tag = egoose.normalizeString(ctx.tag);
+                if ('' === tag) {
+                    tag = undefined;
+                }
+
+                let msg = ctx.message;
+                if (!_.isNil(msg)) {
+                    msg = JSON.stringify(msg, null, 2);
+                }
+
+                await db.Logs.insertMany([{
+                    message: msg,
+                    tag: tag,
+                    time: ctx.time.toDate(),
+                    type: ctx.type,
+                }]);
+            });
+        })();
+    });
+`;
+
         IMPORT_MAPPINGS['mongodb'] = './mongodb';
         IMPORT_MAPPINGS['mongoose'] = 'mongoose';
     }
@@ -393,12 +494,57 @@ function createIndexTS(opts) {
 
 type InitApiAction = (api: contracts.ApiContext, root: express.Router) => void;
 
-function createHost() {
+/**
+ * Creates a new host instance.
+ * 
+ * @return {express.Express} The host instance.
+ */
+export function createHost() {
     const HOST = express();
 
-    const CONTEXT: contracts.ApiContext = {
+    const LOGGER = egoose.createLogger();
+
+    const API: contracts.ApiContext = {
         host: HOST,${ withDatabaseCode }
+        logger: LOGGER,
     };
+
+    HOST.use((req, res, next) => {
+        req['logger'] = LOGGER;
+
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "*,Content-Type,Authorization");
+        res.header("Access-Control-Allow-Methods", "*,GET,POST,PUT,DELETE,PATCH");
+
+        res.header('X-Powered-By', 'eGO Digital GmbH Aachen Germany');
+        res.header('X-Tm-Mk', '1979-09-05 23:09:19.790');
+
+        return next();
+    });
+${ logToDatabaseActionCode }
+    if (egoose.IS_DEV || egoose.IS_LOCAL_DEV) {
+        // log any request in development mode(s)
+
+        HOST.use((req: contracts.RequestWithLogger, res, next) => {
+            try {
+                req.logger.trace({
+                    orgUrl: req.originalUrl,
+                    path: req.path,
+                    request: {
+                        headers: req.headers,
+                    },
+                    socket: {
+                        addr: req.socket.remoteAddress,
+                        port: req.socket.remotePort,
+                        type: req.socket.remoteFamily,
+                    },
+                    url: req.url,
+                }, 'request');
+            } catch { }
+
+            return next();
+        });
+    }
 
     // v1 API
     {
@@ -412,7 +558,7 @@ ${ authCode }
         ];
 
         for (const ACTION of INIT_ACTION) {
-            ACTION(CONTEXT, v1_ROOT);
+            ACTION(API, v1_ROOT);
         }
     }
 
@@ -455,6 +601,8 @@ function createPackageJson(opts) {
         "name": null,
         "version": "0.0.1",
         "description": null,
+        "author": "<AUTHOR>",
+        "license": "<LICENSE>",
         "main": "dist/index.js",
         "dependencies": {
             "@egodigital/egoose": "^3.4.1",
@@ -464,6 +612,7 @@ function createPackageJson(opts) {
             "@types/express": "^4.16.0",
             "@types/mocha": "^5.2.5",
             "@types/node": "8.10.30",
+            "apidoc": "^0.17.7",
             "assert": "^1.4.1",
             "mocha": "^5.2.0",
             "nodemon": "^1.18.7",
@@ -473,12 +622,12 @@ function createPackageJson(opts) {
             "typescript": "^3.1.6"
         },
         "scripts": {
+            "apidoc": "apidoc -i src/api -o docs/api",
             "build": "tsc",
             "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec ts-node src/index.ts",
-            "start": "node dist/index.js"
-        },
-        "author": "<AUTHOR>",
-        "license": "<LICENSE>"
+            "start": "node dist/index.js",
+            "test": "npm run build && ./node_modules/.bin/mocha ./dist/test/**/*.js"
+        }
     };
     
     if (DB_MONGO === opts.database) {
