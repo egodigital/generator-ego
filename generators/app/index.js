@@ -86,7 +86,7 @@ module.exports = class extends Generator {
         // in 'yo-ego.js' file in home directory
         const CUSTOM_CHOISES = [];
         if (fs.existsSync(CUSTOM_GENERATORS_FILE)) {
-            const STATS = fs.lstatSync(CUSTOM_GENERATORS_FILE);
+            const STATS = fs.statSync(CUSTOM_GENERATORS_FILE);
             if (STATS.isFile()) {
                 const CUSTOM_GENERATORS_SCRIPT = loadScriptFromHome(CUSTOM_GENERATORS_FILE)['module'];
                 if (CUSTOM_GENERATORS_SCRIPT) {
