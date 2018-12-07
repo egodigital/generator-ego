@@ -505,8 +505,13 @@ module.exports = class {
      *
      * @param {String} repo The (source of the) repository.
      * @param {String} dest The destination folder.
+     * @param {Object} [opts] Custom options.
      */
-    async downloadGitRepo(repo, dest) {
+    async downloadGitRepo(repo, dest, opts) {
+        if (arguments.length < 3) {
+            opts = {};
+        }
+
         repo = String(repo);
         
         dest = path.resolve(
@@ -545,8 +550,10 @@ module.exports = class {
                         YO_EGO_MODULE.downloaded
                             .apply(this, [{
                                 dir: dest,
+                                'event': 'downloaded',
                                 generator: this,
                                 repository: repo,
+                                tag: opts.tag
                             }])
                     );
                 }
