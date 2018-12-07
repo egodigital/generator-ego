@@ -508,6 +508,8 @@ module.exports = class {
      * @param {Object} [opts] Custom options.
      */
     async downloadGitRepo(repo, dest, opts) {
+        const ME = this;
+
         if (arguments.length < 3) {
             opts = {};
         }
@@ -548,10 +550,10 @@ module.exports = class {
                 if (YO_EGO_MODULE.downloaded) {
                     await Promise.resolve(
                         YO_EGO_MODULE.downloaded
-                            .apply(this, [{
+                            .apply(ME, [{
                                 dir: dest,
                                 'event': 'downloaded',
-                                generator: this,
+                                generator: ME,
                                 repository: repo,
                                 tag: opts.tag
                             }])
