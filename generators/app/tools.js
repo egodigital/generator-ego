@@ -550,10 +550,10 @@ module.exports = class {
                 if (YO_EGO_MODULE.downloaded) {
                     await Promise.resolve(
                         YO_EGO_MODULE.downloaded
-                            .apply(ME, [{
+                            .apply(ME.generator, [{
                                 dir: dest,
                                 'event': 'downloaded',
-                                generator: ME,
+                                generator: ME.generator,
                                 repository: repo,
                                 tag: opts.tag
                             }])
