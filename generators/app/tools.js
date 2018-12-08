@@ -910,9 +910,9 @@ module.exports = class {
 
         try {
             if (val instanceof Error) {
-                return `${val.message}
+                return `[${ val.name }] ${ val.message }
 
-${val.stack}`;
+${ val.stack }`;
             }
     
             if (_.isFunction(val['toString'])) {

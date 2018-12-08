@@ -134,7 +134,7 @@ module.exports = class extends Generator {
 
         this.generators = await this.prompt([{
             type    : 'list',
-            name    : 'selected_generator',
+            name    : 'ego_selected_generator',
             message : 'Please select a generator:',
             choices: CUSTOM_CHOISES.concat(
                 BUILDIN_CHOICES
@@ -147,7 +147,7 @@ module.exports = class extends Generator {
             return;
         }
 
-        const GENERATOR = this.generators['selected_generator'];
+        const GENERATOR = this.generators['ego_selected_generator'];
         if (!GENERATOR) {
             return;
         }
