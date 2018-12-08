@@ -24,12 +24,14 @@ const gen_html5 = require('./gen/html5');
 const Generator = require('yeoman-generator');
 const os = require('os');
 const path = require('path');
+const Signale = require('signale').Signale;
 const tools = require('./tools');
 
 module.exports = class extends Generator {
     constructor(args, opts) {
         super(args, opts);
 
+        this.logger = new Signale();
         this.tools = new tools(this);
     }
 

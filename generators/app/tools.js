@@ -24,6 +24,7 @@ const minimatch = require('minimatch');
 const os = require('os');
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
+const signale = require('signale');
 const xmlJS = require('xml-js');
 const zip = require('node-zip');
 
@@ -646,6 +647,62 @@ module.exports = class {
             .apply(this.generator, arguments);
 
         return this;
+    }
+
+    /**
+     * Invokes a function for log interactivly.
+     *
+     * @param {String} scope The scope.
+     * @param {Function} func The function to invoke.
+     *                        The underlying, interactive Signale logger is submitted to that functions as first argument.
+     * 
+     * @return {Promise} The promise with the result of the function.
+     */
+    async logInteractive(scope, func) {
+        const INTERACTIVE_LOGGER = new signale.Signale({
+            interactive: true
+        });
+
+        INTERACTIVE_LOGGER.scope(this.toStringSafe(scope));
+        try {
+            return await Promise.resolve(
+                func.apply(this.generator,
+                           [ INTERACTIVE_LOGGER ])
+            );
+        } finally {
+            INTERACTIVE_LOGGER.unscope();
+
+            process.stdout.write(
+                os.EOL
+            );
+        }
+    }
+
+    /**
+     * Invokes a function for log interactivly (synchronously).
+     *
+     * @param {String} scope The scope.
+     * @param {Function} func The function to invoke.
+     *                        The underlying, interactive Signale logger is submitted to that functions as first argument.
+     * 
+     * @return {any} The result of the function.
+     */
+    logInteractiveSync(scope, func) {
+        const INTERACTIVE_LOGGER = new signale.Signale({
+            interactive: true
+        });
+
+        INTERACTIVE_LOGGER.scope(this.toStringSafe(scope));
+        try {
+            return func.apply(this.generator,
+                              [ INTERACTIVE_LOGGER ]);
+        } finally {
+            INTERACTIVE_LOGGER.unscope();
+
+            process.stdout.write(
+                os.EOL
+            );
+        }
     }
 
     /**
