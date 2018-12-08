@@ -19,6 +19,7 @@ export function init(api: contracts.ApiContext, root: express.Router) {
      * @api {get} / Gets information about the host.
      * @apiName GetHostInfo
      * @apiGroup ExampleEndpoints
+     * @apiVersion 0.0.1
      *
      * @apiExample {curl} Example usage:
      *     curl http://localhost:8080/api/v1
@@ -52,11 +53,12 @@ export function init(api: contracts.ApiContext, root: express.Router) {
      * @api {post} / Demonstrates how to handle JSON input data.
      * @apiName EchoRequest
      * @apiGroup ExampleEndpoints
+     * @apiVersion 0.0.1
      *
      * @apiExample {curl} Example usage:
      *     curl http://localhost:8080/api/v1 -X POST -H "Content-Type: application/json" -d '{"TM":"19790905", "mk":"19790923"}'
      *
-     * @apiSuccess (200) {Object} hostInfo Host information.
+     * @apiSuccess (200) {Object} echoResponse A result object with the data from the input body.
      *
      * @apiSuccessExample {json} Example response:
      *     HTTP/1.1 200 OK
