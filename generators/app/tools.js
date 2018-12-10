@@ -21,6 +21,7 @@ const fsExtra = require('fs-extra');
 const htmlEntities = require('html-entities').AllHtmlEntities;
 const got = require('got');
 const minimatch = require('minimatch');
+const ora = require('ora');
 const os = require('os');
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
@@ -905,6 +906,23 @@ module.exports = class {
     }
 
     /**
+     * A promise version of 'setTimeout()' function.
+     *
+     * @param {Number} ms The time to wait, in milliseconds.
+     */
+    sleep(ms) {
+        return new Promise((resolve, reject) => {
+            try {
+                setTimeout(() => {
+                    resolve();
+                }, ms);
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    /**
      * Creates a clone of an object and sort its keys.
      *
      * @param {any} obj The object.
@@ -1016,5 +1034,45 @@ ${ val.stack }`;
         return zip(file, {
             base64: false,
         });
+    }
+
+    /**
+     * Invokes an action for a spinner (text).
+     *
+     * @param {String|Object} textOrOptions The initial text or options.
+     * @param {Function} func The function to invoke.
+     * 
+     * @return {Promise} The promise with the result of the function.
+     */
+    async withSpinner(textOrOptions, func) {
+        const SPINNER = new ora(textOrOptions);
+
+        SPINNER.start();
+        try {
+            return await Promise.resolve(
+                func(SPINNER)
+            );
+        } finally {
+            SPINNER.stop();
+        }
+    }
+
+    /**
+     * Invokes an action for a spinner (text) synchronously.
+     *
+     * @param {String|Object} textOrOptions The initial text or options.
+     * @param {Function} func The function to invoke.
+     * 
+     * @return {any} The result of the function.
+     */
+    withSpinnerSync(textOrOptions, func) {
+        const SPINNER = new ora(textOrOptions);
+
+        SPINNER.start();
+        try {
+            return func(SPINNER);
+        } finally {
+            SPINNER.stop();
+        }
     }
 }
