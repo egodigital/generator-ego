@@ -609,6 +609,23 @@ module.exports = class {
     }
 
     /**
+     * Checks if current user has SSH keys stored inside its home directory.
+     * 
+     * @return {Boolean} Has SSH keys or not.
+     */
+    hasSSHKeys() {
+        const PRIV_KEY = path.join(
+            os.homedir(), '.ssh/id_rsa'
+        );
+        const PUB_KEY = path.join(
+            os.homedir(), '.ssh/id_rsa.pub'
+        );
+
+        return this.isFile(PRIV_KEY) &&
+            this.isFile(PUB_KEY);
+    }
+
+    /**
      * Returns a full, joined path relative to the '.generator-ego'
      * folder, inside the current user's home directory.
      * 
@@ -620,7 +637,7 @@ module.exports = class {
         const ARGS = [];
         for (let i = 0; i < arguments.length; i++) {
             ARGS.push(
-                String(arguments[i])
+                this.toStringSafe(arguments[i])
             );
         }
 
@@ -633,6 +650,44 @@ module.exports = class {
         return path.resolve(
             path.join
                 .apply(path, [ GENERATOR_DIR ].concat( ARGS ))
+        );
+    }
+
+    /**
+     * Checks if a path exists and is a directory.
+     *
+     * @param {String} path The path to check.
+     * 
+     * @return {Boolean} Path does exist and is a directory or not.
+     */
+    isDir(path) {
+        return this.isExistingFileSystemItem(
+            path, s => s.isDirectory()
+        );
+    }
+
+    isExistingFileSystemItem(path, statSelector) {
+        path = this.toStringSafe(path);
+
+        if (fsExtra.existsSync(path)) {
+            return statSelector(
+                fsExtra.statSync(path)
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if a path exists and is a file.
+     *
+     * @param {String} path The path to check.
+     * 
+     * @return {Boolean} Path does exist and is a file or not.
+     */
+    isFile(path) {
+        return this.isExistingFileSystemItem(
+            path, s => s.isFile()
         );
     }
 
