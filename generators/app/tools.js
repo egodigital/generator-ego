@@ -598,7 +598,7 @@ module.exports = class {
         if (Buffer.isBuffer(xml)) {
             xml = xml.toString('utf8');
         } else {
-            xml = String(xml);
+            xml = this.toStringSafe(xml);
         }
 
         return JSON.parse(

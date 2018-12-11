@@ -31,6 +31,7 @@ module.exports = class extends Generator {
     constructor(args, opts) {
         super(args, opts);
 
+        this.egoose = require('@egodigital/egoose');
         this.logger = new Signale();
         this.tools = new tools(this);
     }
