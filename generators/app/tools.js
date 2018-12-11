@@ -774,22 +774,30 @@ module.exports = class {
             path.join(
                 this.generator.destinationPath(
                     sanitizeFilename(
-                        String(name).trim()
+                        this.toStringSafe(name).trim()
                     )
                 ),
             )
         );
 
-        if (throwIfExist) {
-            if (fs.existsSync(DEST_DIR)) {
-                throw new Error('[ERROR] Destination directory already exists!');
+        return this.withSpinnerSync(`Creating destination directory '${ DEST_DIR }' ...`, (spinner) => {
+            try {
+                if (throwIfExist) {
+                    if (fs.existsSync(DEST_DIR)) {
+                        throw new Error('[ERROR] Destination directory already exists!');
+                    }
+                }
+        
+                fs.mkdirSync(DEST_DIR);
+                spinner.succeed(`Created destination directory '${ DEST_DIR }'.`);
+        
+                return DEST_DIR;
+            } catch (e) {
+                spinner.fail(`Could not created destination directory '${ DEST_DIR }': ${ this.toStringSafe(e) }`);
+
+                process.exit(1);
             }
-        }
-
-        fs.mkdirSync(DEST_DIR);
-        this.log(`Created destination directory '${ DEST_DIR }'.`);
-
-        return DEST_DIR;
+        });
     }
 
     /**
@@ -1046,7 +1054,7 @@ ${ val.stack }`;
      */
     async withSpinner(textOrOptions, func) {
         const SPINNER = new ora(textOrOptions);
-
+        
         SPINNER.start();
         try {
             return await Promise.resolve(

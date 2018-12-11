@@ -111,6 +111,27 @@ exports.run = async function() {
         'modules': MODULES,
     };
 
+    const GENERATE_FILE = (file, func) => {
+        return this.tools.withSpinner(
+            `Generating '${ file }' ...`,
+            async (spinner) => {
+                try {
+                    const RESULT = await Promise.resolve(
+                        func(spinner)
+                    );
+
+                    spinner.succeed(`File '${ file }' generated.`);
+
+                    return RESULT;
+                } catch (e) {
+                    spinner.fail(`Could not generate file '${ file }': ${ this.tools.toStringSafe(e) }`);
+
+                    process.exit(1);
+                }
+            }  
+        );
+    };
+
     const FILES_TO_OPEN_IN_VSCODE = [
         OUT_DIR + '/src/api/v1/root.ts',
         OUT_DIR + '/src/index.ts',
@@ -142,9 +163,9 @@ exports.run = async function() {
         );
     }
 
-    this.log(`Generating 'package.json' ...`);
-    const PACKAGE_JSON = createPackageJson(OPTS);
-    {
+    await GENERATE_FILE('package.json', () => {
+        const PACKAGE_JSON = createPackageJson(OPTS);
+
         PACKAGE_JSON.name = NAME_INTERNAL;
         PACKAGE_JSON.description = DESCRIPTION;
 
@@ -158,45 +179,41 @@ exports.run = async function() {
             JSON.stringify(PACKAGE_JSON, null, 4),
             'utf8'
         );
-    }
+    });
 
-    // src/index.ts
-    this.log(`Generating 'src/index.ts' ...`);
-    const INDEX_TS = createIndexTS(OPTS);
-    {
+    await GENERATE_FILE('src/index.ts', () => {
+        const INDEX_TS = createIndexTS(OPTS);
+
         fs.writeFileSync(
             OUT_DIR + '/src/index.ts',
             INDEX_TS,
             'utf8'
         );
-    }
+    });
 
-    // src/contracts.ts
-    this.log(`Generating 'src/contracts.ts' ...`);
-    const CONTRACTS_TS = createContractsTS(OPTS);
-    {
+    await GENERATE_FILE('src/contracts.ts', () => {
+        const CONTRACTS_TS = createContractsTS(OPTS);
+
         fs.writeFileSync(
             OUT_DIR + '/src/contracts.ts',
             CONTRACTS_TS,
             'utf8'
         );
-    }
+    });
 
-    // docker-compose.yml
-    this.log(`Generating 'docker-compose.yml' ...`);
-    const DOCKER_COMPOSE_YML = createDockerComposeYml(OPTS);
-    {
+    await GENERATE_FILE('docker-compose.yml', () => {
+        const DOCKER_COMPOSE_YML = createDockerComposeYml(OPTS);
+
         fs.writeFileSync(
             OUT_DIR + '/docker-compose.yml',
             DOCKER_COMPOSE_YML,
             'utf8'
         );
-    }
+    });
 
-    // apidoc.json
-    this.log(`Generating 'apidoc.json' ...`);
-    const APIDOC_JSON = createAPIDocJSON(OPTS);
-    {
+    await GENERATE_FILE('apidoc.json', () => {
+        const APIDOC_JSON = createAPIDocJSON(OPTS);
+
         APIDOC_JSON.name = NAME_INTERNAL;
         APIDOC_JSON.description = DESCRIPTION;
         APIDOC_JSON.title = `${ NAME } API`;
@@ -206,7 +223,7 @@ exports.run = async function() {
             JSON.stringify(APIDOC_JSON, null, 4),
             'utf8'
         );
-    }
+    });
 
     // .gitignore
     this.tools.createGitIgnore(OUT_DIR, [
