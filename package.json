@@ -1,6 +1,6 @@
 {
   "name": "generator-ego",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": false,
   "description": "A Yeoman generator with useful general sub generators and the possibility to expand it by JavaScript. ",
   "files": [
@@ -39,7 +39,7 @@
     "url": "git+https://github.com/egodigital/generator-ego.git"
   },
   "dependencies": {
-    "@egodigital/egoose": "^3.5.0",
+    "@egodigital/egoose": "^3.5.1",
     "chalk": "^2.4.1",
     "ejs": "^2.6.1",
     "fs-extra": "^7.0.1",

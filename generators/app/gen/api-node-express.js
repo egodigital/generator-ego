@@ -513,7 +513,7 @@ type InitApiAction = (api: contracts.ApiContext, root: express.Router) => void;
 
 /**
  * Creates a new host instance.
- * 
+ *
  * @return {express.Express} The host instance.
  */
 export function createHost() {
