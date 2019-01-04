@@ -530,7 +530,7 @@ module.exports = class {
 
         // first clone ...
         this.log(`Downloading Git repo from '${repo}' ...`);
-        this.generator.spawnCommandSync('git', ['clone', repo, '.'], {
+        this.generator.spawnCommandSync('git', ['clone', '--depth=1', repo, '.'], {
             'cwd': dest
         });
 
