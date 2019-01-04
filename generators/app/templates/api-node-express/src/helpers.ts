@@ -16,7 +16,7 @@ import * as egoose from '@egodigital/egoose';
  * @return {string} The hash.
  */
 export function hashPassword(pwd: any, salt?: any): string {
-    if (arguments.length < 1) {
+    if (arguments.length < 2) {
         salt = process.env.PASSWORD_SALT;
     }
 
