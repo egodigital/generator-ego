@@ -1,5 +1,15 @@
 # Change Log (generator-ego)
 
+## 0.14.0
+
+* added `app-node-typescript` generator for blank [Node.js](https://nodejs.org/) based apps, written in [TypeScript](https://www.typescriptlang.org/)
+* improved `api-node-express` generator
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [@egodigital/egoose](https://www.npmjs.com/package/@egodigital/egoose) `^3.6.0`
+  * [got](https://www.npmjs.com/package/got) `^9.5.1`
+  * [chalk](https://www.npmjs.com/package/chalk) `^2.4.2`
+  * [xml-js](https://www.npmjs.com/package/xml-js) `^1.6.9`
+
 ## 0.13.1
 
 * bugfixes

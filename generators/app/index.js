@@ -18,6 +18,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 const gen_api_node_express = require('./gen/api-node-express');
 const gen_api_php_slim = require('./gen/api-php-slim');
+const gen_app_node_typescript = require('./gen/app-node-typescript');
 const gen_app_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
 const gen_app_reactnative_blank = require('./gen/app-reactnative-blank');
 const gen_html5 = require('./gen/html5');
@@ -74,6 +75,9 @@ module.exports = class extends Generator {
         }, {
             name: "📱  App (React Native - blank)",
             value: gen_app_reactnative_blank.run,
+        }, {
+            name: "🛠  App (Node - TypeScript ^3.0)",
+            value: gen_app_node_typescript.run,
         }, {
             name: "🌐  HTML 5",
             value: gen_html5.run,

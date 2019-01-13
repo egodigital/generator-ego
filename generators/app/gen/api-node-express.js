@@ -622,21 +622,21 @@ function createPackageJson(opts) {
         "license": "<LICENSE>",
         "main": "dist/index.js",
         "dependencies": {
-            "@egodigital/egoose": "^3.4.1",
+            "@egodigital/egoose": "^3.6.0",
             "express": "^4.16.4"
         },
         "devDependencies": {
             "@types/express": "^4.16.0",
             "@types/mocha": "^5.2.5",
-            "@types/node": "8.10.30",
+            "@types/node": "^8.10.39",
             "apidoc": "^0.17.7",
             "assert": "^1.4.1",
             "mocha": "^5.2.0",
-            "nodemon": "^1.18.7",
+            "nodemon": "^1.18.9",
             "supertest": "^3.3.0",
             "ts-node": "^7.0.1",
-            "tslint": "^5.11.0",
-            "typescript": "^3.1.6"
+            "tslint": "^5.12.1",
+            "typescript": "^3.2.2"
         },
         "scripts": {
             "apidoc": "apidoc -i src/api -o docs/api",
