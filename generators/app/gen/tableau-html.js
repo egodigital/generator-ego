@@ -268,7 +268,7 @@ exports.run = async function() {
 
 function generateJavaScript(opts) {
     let colsCode = '';
-    colsCode += '        var cols = [\n';
+    colsCode += '        let cols = [\n';
     for (let i = 0; i < opts.columns.length; i++) {
         const COL = opts.columns[i];
 
@@ -289,12 +289,12 @@ function generateJavaScript(opts) {
     }
 
     return `(function () {
-    var egoConnector = tableau.makeConnector();
+    let egoConnector = tableau.makeConnector();
 
     egoConnector.getSchema = function (schemaCallback) {
 ${ colsCode }
 
-        var tableSchema = {
+        let tableSchema = {
             id: ${ JSON.stringify(opts.name + 'Feed') },
             alias: ${ JSON.stringify("Loads '" + opts.title + "' data") },
             columns: cols
@@ -306,14 +306,14 @@ ${ colsCode }
     };
 
     egoConnector.getData = function(table, done) {
-        var urlParams = [];
+        let urlParams = [];
         document.querySelectorAll(".ego-url-param").forEach(function(e) {
             urlParams.push(
                 e.getAttribute('name') + '=' + encodeURIComponent(e.value)
             );
         });
 
-        var url = ${ JSON.stringify(opts.url) };
+        let url = ${ JSON.stringify(opts.url) };
         if (urlParams.length > 0) {
             url += ${ JSON.stringify(opts.url.indexOf('?') > -1 ? '&' : '?') };
             url += urlParams.join('&');
@@ -326,14 +326,13 @@ ${ colsCode }
                 // set request headers, e.g.
             },
             success: function(response, textStatus, jqXHR) {
-                var data = response${ getPropertyPath(opts.dataProperty).join('') };
+                let data = response${ getPropertyPath(opts.dataProperty).join('') };
 
-                var tableData = [];
+                let tableData = [];
 
                 if (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        var newColumn = {
-                        };
+                    for (let i = 0; i < data.length; i++) {
+                        let newColumn = {};
 ${ newColCode }
                         tableData.push(
                             newColumn
