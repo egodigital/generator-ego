@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const fs = require('fs-extra');
-const htmlEntities = require('html-entities');
+const sanitizeFilename = require('sanitize-filename');
 
 /**
  * A HTML generator for Tableau.
@@ -27,10 +27,11 @@ exports.run = async function() {
         return;
     }
 
-    const AMOUNT_OF_COLS = parseInt(
+    // # of columns
+    const NUMBER_OF_COLUMNS = parseInt(
         this.tools.toStringSafe(
             await this.tools.promptString(
-                `Enter the # of COLUMNS:`, {
+                `How many COLUMNS do you need (> 0)?`, {
                     validator: (val) => {
                         const NR = parseInt(
                             this.tools
@@ -46,22 +47,24 @@ exports.run = async function() {
             )
         ).trim()
     );
-    if (isNaN(AMOUNT_OF_COLS)) {
+    if (isNaN(NUMBER_OF_COLUMNS)) {
         return;
     }
 
+    // data property
     const DATA_PROPERTY = this.tools.toStringSafe(
         await this.tools.promptString(
-            `Enter the root property:`
+            `PROPERTY of the result that contains the DATA:`
         )
     ).trim();
 
+    // columns
     const COLS = [];
     let lastDataType = 'string';
-    for (let i = 0; i < AMOUNT_OF_COLS; i++) {
-        const COL_NAME = this.tools.toStringSafe(
+    for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
+        const COLUMN_NAME = this.tools.toStringSafe(
             await this.tools.promptString(
-                `Enter the NAME of column #${ i + 1 }:`, {
+                `NAME of column #${ i + 1 }:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
@@ -70,49 +73,53 @@ exports.run = async function() {
                 }
             )
         ).trim();
+        if ('' === COLUMN_NAME) {
+            return;
+        }
 
         // data type
-        const DATA_TYPE = this.tools.toStringSafe(
+        const COLUMN_DATA_TYPE = this.tools.toStringSafe(
             await this.tools.promptList(
-                `Define the data type of column #${ i + 1 }`,
+                `DATA TYPE of column #${ i + 1 }`,
                 [ 'bool', 'date', 'datetime', 'float', 'geometry', 'int', 'string' ],
                 {
                     default: lastDataType,
                 }
             )
         ).trim();
-        if ('' === DATA_TYPE) {
+        if ('' === COLUMN_DATA_TYPE) {
             return;
         }
 
-        const PROPERTY_NAME = this.tools.toStringSafe(
+        const COLUMN_PROPERTY = this.tools.toStringSafe(
             await this.tools.promptString(
-                `Enter the name of the property of the column #${ i + 1 }:`, {
+                `PROPERTY PATH of column #${ i + 1 }:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
                             .trim();
                     },
-                    default: COL_NAME,
+                    default: COLUMN_NAME,
                 }
             )
         ).trim();
-        if ('' === PROPERTY_NAME) {
+        if ('' === COLUMN_PROPERTY) {
             return;
         }
 
         COLS.push({
-            name: COL_NAME,
-            property: PROPERTY_NAME,
-            type: DATA_TYPE,
+            name: COLUMN_NAME,
+            property: COLUMN_PROPERTY,
+            type: COLUMN_DATA_TYPE,
         });
 
-        lastDataType = DATA_TYPE;
+        lastDataType = COLUMN_DATA_TYPE;
     }
 
-    const URL = this.tools.toStringSafe(
+    // request URL
+    const REQUEST_URL = this.tools.toStringSafe(
         await this.tools.promptString(
-            `Enter the URL that provides the data:`, {
+            `Request URL:`, {
                 validator: (val) => {
                     return '' !== this.tools
                         .toStringSafe(val)
@@ -121,25 +128,28 @@ exports.run = async function() {
             }
         )
     ).trim();
+    if ('' === REQUEST_URL) {
+        return;
+    }
 
     // HTTP method
-    const METHOD = this.tools.toStringSafe(
+    const REQUEST_METHOD = this.tools.toStringSafe(
         await this.tools.promptList(
-            `Select the HTTP request method:`,
+            `HTTP method for the request:`,
             [ 'GET', 'POST', 'PATCH', 'PUT' ],
             {
                 default: 'GET',
             }
         )
     ).trim();
-    if ('' === METHOD) {
+    if ('' === REQUEST_METHOD) {
         return;
     }
 
-    const AMOUNT_OF_PARAMS = parseInt(
+    const NUMBER_OF_PARAMETERS = parseInt(
         this.tools.toStringSafe(
             await this.tools.promptString(
-                `Enter the # of URL parameters:`, {
+                `How many optional URL parameters do you need?:`, {
                     validator: (val) => {
                         const NR = parseInt(
                             this.tools
@@ -156,15 +166,16 @@ exports.run = async function() {
             )
         ).trim()
     );
-    if (isNaN(AMOUNT_OF_PARAMS)) {
+    if (isNaN(NUMBER_OF_PARAMETERS)) {
         return;
     }
 
-    const PARAMS = [];
-    for (let i = 0; i < AMOUNT_OF_PARAMS; i++) {
+    // dynamic request parameters
+    const PARAMETERS = [];
+    for (let i = 0; i < NUMBER_OF_PARAMETERS; i++) {
         const PARAM_NAME = this.tools.toStringSafe(
             await this.tools.promptString(
-                `Enter the NAME of parameter #${ i + 1 }:`, {
+                `NAME of parameter #${ i + 1 }:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
@@ -179,11 +190,11 @@ exports.run = async function() {
 
         const PARAM_DEFAULT = this.tools.toStringSafe(
             await this.tools.promptString(
-                `Enter the DEFAULT of parameter #${ i + 1 }:`,
+                `DEFAULT VALUE of parameter #${ i + 1 }:`,
             )
         );
 
-        PARAMS.push({
+        PARAMETERS.push({
             default: PARAM_DEFAULT,
             name: PARAM_NAME
         });
@@ -195,15 +206,15 @@ exports.run = async function() {
         columns: COLS,
         dataProperty: DATA_PROPERTY,
         dir: OUT_DIR,
-        method: METHOD,
+        method: REQUEST_METHOD,
         name: NAME_AND_TITLE.name,
-        parameters: PARAMS,
+        parameters: PARAMETERS,
         title: NAME_AND_TITLE.title,
-        url: URL,
+        url: REQUEST_URL,
     };
 
-    const HTML_FILENAME = `${ OPTS.name }WDC.html`;
-    const JAVASCRIPT_FILENAME = `${ OPTS.name }WDC.js`;
+    const HTML_FILENAME = `${ sanitizeFilename(OPTS.name) }WDC.html`;
+    const JAVASCRIPT_FILENAME = `${ sanitizeFilename(OPTS.name) }WDC.js`;
 
     OPTS.htmlFile = HTML_FILENAME;
     OPTS.jsFile = JAVASCRIPT_FILENAME;
@@ -274,7 +285,7 @@ function generateJavaScript(opts) {
 
         const PROPERTY_PATH = getPropertyPath(COL.property);
 
-        newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = data${ PROPERTY_PATH.join('') };\n`;
+        newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = data[i]${ PROPERTY_PATH.join('') };\n`;
     }
 
     return `(function () {
@@ -297,28 +308,27 @@ ${ colsCode }
 
     egoConnector.getData = function(table, done) {
         var urlParams = [];
-        $('.ego-url-param').each(function() {
-            var e = $(this);
+        $('#ego-url-param-list .ego-url-param').each(function(index, element) {
+            var egoUrlParam = $(element);
 
             urlParams.push(
-                e.attr('name') + '=' + encodeURIComponent(e.val())
+                egoUrlParam.attr('name') + '=' + encodeURIComponent(egoUrlParam.val())
             );
         });
 
         var url = ${ JSON.stringify(opts.url) };
         if (urlParams.length > 0) {
-            url += url.indexOf('?') > -1 ? '&' : '?';
+            url += ${ JSON.stringify(opts.url.indexOf('?') > -1 ? '&' : '?') };
             url += urlParams.join('&');
         }
-
-        console.log({
-            url: url
-        });
 
         $.ajax({
             url: url,
             method: ${ JSON.stringify(opts.method) },
-            success: function(response) {
+            beforeSend: function(jqXHR) {
+                // set request headers, e.g.
+            },
+            success: function(response, textStatus, jqXHR) {
                 var data = response${ getPropertyPath(opts.dataProperty).join('') };
 
                 var tableData = [];
@@ -357,14 +367,15 @@ $(document).ready(function () {
 function generateHtml(opts) {
     let paramListCode = '';
     if (opts.parameters.length > 0) {
-        paramListCode += '\n                <table class="table table-hover table-striped">\n';
+        paramListCode += '\n                <h1>URL parameters</h1>\n';
+        paramListCode += '\n                <table class="table table-hover table-striped" id="ego-url-param-list">\n';
         for (let i = 0; i < opts.parameters.length; i++) {
             const PARAM = opts.parameters[i];
 
             paramListCode += '                <tr>\n';
             paramListCode += '                <td>' + this.tools.encodeHtml(PARAM.name) + '</td>\n';
             paramListCode += '                <td>\n';
-            paramListCode += '                    <input class="ego-url-param form-control" type="text" value="' + this.tools.encodeHtml(PARAM.default) + '" name="' + this.tools.encodeHtml(PARAM.name) + '">\n';
+            paramListCode += '                    <input class="form-control ego-url-param" type="text" value="' + this.tools.encodeHtml(PARAM.default) + '" name="' + this.tools.encodeHtml(PARAM.name) + '">\n';
             paramListCode += '                </td>\n';
             paramListCode += '                </tr>\n';
         }
