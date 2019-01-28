@@ -40,6 +40,7 @@ from your console.
 | `app-node-typescript` | Creates a blank [Node.js](https://nodejs.org/) app |
 | `app-reactnative-blank` | Creates a blank [React Native](https://facebook.github.io/react-native/) app |
 | `html5` | Creates HTML page based on [HTML 5 Boilerplate](https://html5boilerplate.com/) |
+| `tableau-html` | Creates connector files for [Tableau](https://www.tableau.com/) |
 
 ## Additional generators
 

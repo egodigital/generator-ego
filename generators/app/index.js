@@ -22,6 +22,7 @@ const gen_app_node_typescript = require('./gen/app-node-typescript');
 const gen_app_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
 const gen_app_reactnative_blank = require('./gen/app-reactnative-blank');
 const gen_html5 = require('./gen/html5');
+const gen_tableau_html = require('./gen/tableau-html');
 const Generator = require('yeoman-generator');
 const os = require('os');
 const path = require('path');
@@ -81,6 +82,9 @@ module.exports = class extends Generator {
         }, {
             name: "🌐  HTML 5",
             value: gen_html5.run,
+        }, {
+            name: "📊  Tableau Connector",
+            value: gen_tableau_html.run,
         }];
 
         const CUSTOM_GENERATORS_FILE = path.resolve(
