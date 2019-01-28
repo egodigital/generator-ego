@@ -136,6 +136,52 @@ exports.run = async function() {
         return;
     }
 
+    const AMOUNT_OF_PARAMS = parseInt(
+        this.tools.toStringSafe(
+            await this.tools.promptString(
+                `Enter the # of URL parameters:`, {
+                    validator: (val) => {
+                        const NR = parseInt(
+                            this.tools
+                                .toStringSafe(val)
+                        );
+                        if (!isNaN(NR)) {
+                            return NR > -1;
+                        }
+
+                        return false;
+                    },
+                    default: '0',
+                }
+            )
+        ).trim()
+    );
+    if (isNaN(AMOUNT_OF_PARAMS)) {
+        return;
+    }
+
+    const PARAMS = [];
+    for (let i = 0; i < AMOUNT_OF_PARAMS; i++) {
+        const PARAM_NAME = this.tools.toStringSafe(
+            await this.tools.promptString(
+                `Enter the NAME of parameter #${ i + 1 }:`, {
+                    validator: (val) => {
+                        return '' !== this.tools
+                            .toStringSafe(val)
+                            .trim();
+                    },
+                }
+            )
+        ).trim();
+        if ('' === PARAM_NAME) {
+            return;
+        }
+
+        PARAMS.push({
+            name: PARAM_NAME
+        });
+    }
+
     const OUT_DIR = NAME_AND_TITLE.mkDestinationDir();
 
     const OPTS = {
@@ -144,6 +190,7 @@ exports.run = async function() {
         dir: OUT_DIR,
         method: METHOD,
         name: NAME_AND_TITLE.name,
+        parameters: PARAMS,
         title: NAME_AND_TITLE.title,
         url: URL,
     };
@@ -242,7 +289,27 @@ ${ colsCode }
     };
 
     egoConnector.getData = function(table, done) {
+        var urlParams = [];
+        $('.ego-url-param').each(function() {
+            var e = $(this);
+
+            urlParams.push(
+                e.attr('name') + '=' + encodeURIComponent(e.val())
+            );
+        });
+
+        var url = ${ JSON.stringify(opts.url) };
+        if (urlParams.length > 0) {
+            url += url.indexOf('?') > -1 ? '&' : '?';
+            url += urlParams.join('&');
+        }
+
+        console.log({
+            url: url
+        });
+
         $.ajax({
+            url: url,
             method: ${ JSON.stringify(opts.method) },
             success: function(response) {
                 var data = response${ getPropertyPath(opts.dataProperty).join('') };
@@ -281,6 +348,22 @@ $(document).ready(function () {
 }
 
 function generateHtml(opts) {
+    let paramListCode = '';
+    if (opts.parameters.length > 0) {
+        paramListCode += '\n                <table class="table table-hover table-striped">\n';
+        for (let i = 0; i < opts.parameters.length; i++) {
+            const PARAM = opts.parameters[i];
+
+            paramListCode += '                <tr>\n';
+            paramListCode += '                <td>' + this.tools.encodeHtml(PARAM.name) + '</td>\n';
+            paramListCode += '                <td>\n';
+            paramListCode += '                    <input class="ego-url-param form-control" type="text" name="' + this.tools.encodeHtml(PARAM.name) + '">\n';
+            paramListCode += '                </td>\n';
+            paramListCode += '                </tr>\n';
+        }
+        paramListCode += '                </table>\n';
+    }
+
     return `<html>
 
 <head>
@@ -302,6 +385,7 @@ function generateHtml(opts) {
                 <button type="button" id="egoSubmitButton" class="btn btn-success" style="margin: 10px;">
                     Get &quot;${ this.tools.encodeHtml(opts.title) }&quot; Data
                 </button>
+${ paramListCode }
             </div>
         </div>
     </div>
