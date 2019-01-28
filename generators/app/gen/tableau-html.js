@@ -177,7 +177,14 @@ exports.run = async function() {
             return;
         }
 
+        const PARAM_DEFAULT = this.tools.toStringSafe(
+            await this.tools.promptString(
+                `Enter the DEFAULT of parameter #${ i + 1 }:`,
+            )
+        );
+
         PARAMS.push({
+            default: PARAM_DEFAULT,
             name: PARAM_NAME
         });
     }
@@ -357,7 +364,7 @@ function generateHtml(opts) {
             paramListCode += '                <tr>\n';
             paramListCode += '                <td>' + this.tools.encodeHtml(PARAM.name) + '</td>\n';
             paramListCode += '                <td>\n';
-            paramListCode += '                    <input class="ego-url-param form-control" type="text" name="' + this.tools.encodeHtml(PARAM.name) + '">\n';
+            paramListCode += '                    <input class="ego-url-param form-control" type="text" value="' + this.tools.encodeHtml(PARAM.default) + '" name="' + this.tools.encodeHtml(PARAM.name) + '">\n';
             paramListCode += '                </td>\n';
             paramListCode += '                </tr>\n';
         }
