@@ -463,7 +463,7 @@ module.exports = class {
         return this.asArray(patterns)
             .map(p => String(p))
             .filter(p => '' !== p.trim())
-            .some(p => minimatch(val, p));
+            .some(p => minimatch(val, p, { dot: true }));
     }
 
     /**

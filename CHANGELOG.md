@@ -1,5 +1,11 @@
 # Change Log (generator-ego)
 
+## 0.15.0
+
+* added `tableau-html` generator to generator simple [web connectors](https://onlinehelp.tableau.com/current/pro/desktop/en-us/examples_web_data_connector.htm) for [Tableau](https://www.tableau.com/)
+* added `app-vue-mdbootstrap` generator for [Vue](https://vuejs.org/) based web pages with [MD Bootstrap Free](https://mdbootstrap.com/docs/vue/)
+* [copy()](https://github.com/egodigital/generator-ego/wiki#copyfrom-to-patterns-excludes-) method of [tools](https://github.com/egodigital/generator-ego/wiki#tools-) namespace now copyies even dot files
+
 ## 0.14.0
 
 * added `app-node-typescript` generator for blank [Node.js](https://nodejs.org/) based apps, written in [TypeScript](https://www.typescriptlang.org/)
