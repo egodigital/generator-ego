@@ -27,6 +27,13 @@ exports.run = async function() {
         return;
     }
 
+    // data property
+    const DATA_PROPERTY = this.tools.toStringSafe(
+        await this.tools.promptString(
+            `PROPERTY of the result that contains the DATA:`
+        )
+    ).trim();
+
     // # of columns
     const NUMBER_OF_COLUMNS = parseInt(
         this.tools.toStringSafe(
@@ -50,13 +57,6 @@ exports.run = async function() {
     if (isNaN(NUMBER_OF_COLUMNS)) {
         return;
     }
-
-    // data property
-    const DATA_PROPERTY = this.tools.toStringSafe(
-        await this.tools.promptString(
-            `PROPERTY of the result that contains the DATA:`
-        )
-    ).trim();
 
     // columns
     const COLS = [];
@@ -264,6 +264,10 @@ exports.run = async function() {
             'utf8'
         );
     });
+
+    await this.tools.askForOpenVSCode(
+        OUT_DIR,
+    );
 }
 
 function generateJavaScript(opts) {
@@ -288,7 +292,46 @@ function generateJavaScript(opts) {
         newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = data[i]${ PROPERTY_PATH.join('') };\n`;
     }
 
-    return `(function () {
+    return `function getQueryVariables() {
+    let varList = {};
+
+    let query = window.location.search.substring(1);
+    let vars = query.split('&');
+    for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=');
+
+        varList[
+            decodeURIComponent(pair[0])
+        ] = decodeURIComponent(pair[1]);
+    }
+
+    return varList;
+}
+
+(function () {
+    let url = ${ JSON.stringify(opts.url) };
+    {
+        let urlParams = [];
+
+        let queryVars = getQueryVariables();
+        for (let varName in queryVars) {
+            let varValue = queryVars[varName];
+
+            urlParams.push(
+                encodeURIComponent(varName) + '=' + encodeURIComponent(varValue)
+            );
+
+            $('input[name="' + varName + '"].ego-url-param').val(
+                varValue
+            );
+        }
+
+        if (urlParams.length > 0) {
+            url += ${ JSON.stringify(opts.url.indexOf('?') > -1 ? '&' : '?') };
+            url += urlParams.join('&');
+        }
+    }
+
     let egoConnector = tableau.makeConnector();
 
     egoConnector.getSchema = function (schemaCallback) {
@@ -306,19 +349,6 @@ ${ colsCode }
     };
 
     egoConnector.getData = function(table, done) {
-        let urlParams = [];
-        document.querySelectorAll(".ego-url-param").forEach(function(e) {
-            urlParams.push(
-                e.getAttribute('name') + '=' + encodeURIComponent(e.value)
-            );
-        });
-
-        let url = ${ JSON.stringify(opts.url) };
-        if (urlParams.length > 0) {
-            url += ${ JSON.stringify(opts.url.indexOf('?') > -1 ? '&' : '?') };
-            url += urlParams.join('&');
-        }
-
         $.ajax({
             url: url,
             method: ${ JSON.stringify(opts.method) },
@@ -371,7 +401,7 @@ function generateHtml(opts) {
             paramListCode += '                        <tr>\n';
             paramListCode += '                            <td>' + this.tools.encodeHtml(PARAM.name) + '</td>\n';
             paramListCode += '                            <td>\n';
-            paramListCode += '                                <input class="form-control ego-url-param" type="text" value="' + this.tools.encodeHtml(PARAM.default) + '" name="' + this.tools.encodeHtml(PARAM.name) + '">\n';
+            paramListCode += '                                <input class="form-control ego-url-param" type="text" value="' + this.tools.encodeHtml(PARAM.default) + '" name="' + this.tools.encodeHtml(PARAM.name) + '" readonly>\n';
             paramListCode += '                            </td>\n';
             paramListCode += '                        </tr>\n';
         }
