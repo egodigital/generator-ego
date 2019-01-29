@@ -1,6 +1,6 @@
 # Change Log (generator-ego)
 
-## 0.15.0
+## 0.15.1
 
 * added `tableau-html` generator to generator simple [web connectors](https://onlinehelp.tableau.com/current/pro/desktop/en-us/examples_web_data_connector.htm) for [Tableau](https://www.tableau.com/)
 * added `app-vue-mdbootstrap` generator for [Vue](https://vuejs.org/) based web pages with [MD Bootstrap Free](https://mdbootstrap.com/docs/vue/)
