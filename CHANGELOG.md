@@ -5,6 +5,10 @@
 * added `tableau-html` generator to generator simple [web connectors](https://onlinehelp.tableau.com/current/pro/desktop/en-us/examples_web_data_connector.htm) for [Tableau](https://www.tableau.com/)
 * added `app-vue-mdbootstrap` generator for [Vue](https://vuejs.org/) based web pages with [MD Bootstrap Free](https://mdbootstrap.com/docs/vue/)
 * [copy()](https://github.com/egodigital/generator-ego/wiki#copyfrom-to-patterns-excludes-) method of [tools](https://github.com/egodigital/generator-ego/wiki#tools-) namespace now copyies even dot files
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [@egodigital/egoose](https://www.npmjs.com/package/@egodigital/egoose) `^3.8.0`
+  * [got](https://www.npmjs.com/package/got) `^9.6.0`
+  * [moment](https://www.npmjs.com/package/moment) `^2.24.0`
 
 ## 0.14.0
 
