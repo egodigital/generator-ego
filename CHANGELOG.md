@@ -1,6 +1,6 @@
 # Change Log (generator-ego)
 
-## 0.16.0
+## 0.16.1
 
 * added `app-vue-vuetify` generator for [Vue](https://vuejs.org/) based web pages with [Vuetify](https://vuetifyjs.com/)
 * added [confirm()](https://github.com/egodigital/generator-ego/wiki#confirmmessage-opts-) method to [tools](https://github.com/egodigital/generator-ego/wiki#tools-) namespace

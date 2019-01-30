@@ -92,7 +92,7 @@ exports.run = async function() {
 
     if (INSTALL_VUE_CLI) {
         this.log(`Installing Vue CLI ...`);
-        this.generator.spawnCommandSync('npm', ['install', '@vue/cli', '-g'], {
+        this.spawnCommandSync('npm', ['install', '@vue/cli', '-g'], {
             'cwd': OUT_DIR
         });
     }
