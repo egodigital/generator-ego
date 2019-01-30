@@ -168,16 +168,17 @@ exports.run = async function() {
 
     this.log(`Setting up 'src/index.ejs' ...`);
     {
-        const INDEX_EJS = TEMPLATES_DIR + '/src/index.ejs';
+        const INDEX_EJS_SRC = TEMPLATES_DIR + '/src/index.ejs';
+        const INDEX_EJS_DEST = OUT_DIR + '/src/index.ejs';
 
         const NEW_CONTENT = fs.readFileSync(
-            INDEX_EJS,
+            INDEX_EJS_SRC,
             'utf8'
         ).split('{{ EGO-PAGE-TITLE }}')
          .join(this.tools.encodeHtml(NAME_AND_TITLE.title));
 
          fs.writeFileSync(
-            INDEX_EJS,
+            INDEX_EJS_DEST,
             NEW_CONTENT,
             'utf8'
          );

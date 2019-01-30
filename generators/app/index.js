@@ -22,6 +22,7 @@ const gen_app_node_typescript = require('./gen/app-node-typescript');
 const gen_app_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
 const gen_app_reactnative_blank = require('./gen/app-reactnative-blank');
 const gen_app_vue_mdbootstrap = require('./gen/app-vue-mdbootstrap');
+const gen_app_vue_vuetify = require('./gen/app-vue-vuetify');
 const gen_html5 = require('./gen/html5');
 const gen_tableau_html = require('./gen/tableau-html');
 const Generator = require('yeoman-generator');
@@ -83,6 +84,9 @@ module.exports = class extends Generator {
         }, {
             name: "🌐  App (Vue - MD Bootstrap)",
             value: gen_app_vue_mdbootstrap.run,
+        }, {
+            name: "🌐  App (Vue - Vuetify)",
+            value: gen_app_vue_vuetify.run,
         }, {
             name: "🌐  HTML 5",
             value: gen_html5.run,

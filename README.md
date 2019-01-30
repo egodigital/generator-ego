@@ -40,6 +40,7 @@ from your console.
 | `app-node-typescript` | Creates a blank [Node.js](https://nodejs.org/) app |
 | `app-reactnative-blank` | Creates a blank [React Native](https://facebook.github.io/react-native/) app |
 | `app-vue-mdbootstrap` | Creates a basic [Vue](https://vuejs.org/) web page with [MD Bootstrap Free](https://mdbootstrap.com/docs/vue/) |
+| `app-vue-vuetify` | Creates a basic [Vue](https://vuejs.org/) web page with [Vuetify](https://vuetifyjs.com/) |
 | `html5` | Creates HTML page based on [HTML 5 Boilerplate](https://html5boilerplate.com/) |
 | `tableau-html` | Creates connector files for [Tableau](https://www.tableau.com/) |
 
@@ -99,3 +100,7 @@ To work with the code:
 ### app-electron-mdbootstrap
 
 That template makes use of free version of [MD Bootstrap](https://mdbootstrap.com/vue) and is based on [electron-vue](https://github.com/SimulatedGREG/electron-vue).
+
+### app-vue-mdbootstrap
+
+The template makes use of free version of [MD Bootstrap](https://mdbootstrap.com/vue).
