@@ -70,6 +70,12 @@ exports.run = async function() {
         )
     ).trim();
 
+    const INSTALL_VUE_CLI = await this.tools.confirm(
+        `Install Vue CLI?`, {
+            default: false,
+        }
+    );
+
     const NAME = NAME_AND_TITLE.name;
     const NAME_LOWER = NAME.toLowerCase();
     const NAME_INTERNAL = NAME_LOWER.split(' ')
@@ -83,6 +89,13 @@ exports.run = async function() {
 
     const FILES_TO_OPEN_IN_VSCODE = [
     ];
+
+    if (INSTALL_VUE_CLI) {
+        this.log(`Installing Vue CLI ...`);
+        this.generator.spawnCommandSync('npm', ['install', '@vue/cli', '-g'], {
+            'cwd': OUT_DIR
+        });
+    }
 
     const GENERATE_FILE = (file, func) => {
         return this.tools.withSpinner(

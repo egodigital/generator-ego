@@ -1,5 +1,11 @@
 # Change Log (generator-ego)
 
+## 0.16.0
+
+* added `app-vue-vuetify` generator for [Vue](https://vuejs.org/) based web pages with [Vuetify](https://vuetifyjs.com/)
+* added [confirm()](https://github.com/egodigital/generator-ego/wiki#confirmmessage-opts-) method to [tools](https://github.com/egodigital/generator-ego/wiki#tools-) namespace
+* (bug)fixes
+
 ## 0.15.1
 
 * added `tableau-html` generator to generator simple [web connectors](https://onlinehelp.tableau.com/current/pro/desktop/en-us/examples_web_data_connector.htm) for [Tableau](https://www.tableau.com/)

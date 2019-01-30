@@ -252,6 +252,27 @@ module.exports = class {
     }
 
     /**
+     * Prompts for a message to confirm.
+     *
+     * @param {String} message The message,
+     * @param {Object} [opts] Custom options.
+     * 
+     * @return {Promise<Boolean>} The promise with the selected value.
+     */
+    async confirm(message, opts) {
+        if (arguments.length < 2) {
+            opts = {};
+        }
+
+        return (await this.prompt([{
+            'type': 'confirm',
+            'name': 'ego_confirm',
+            'message': this.toStringSafe(message),
+            'default': opts.default,
+        }]))['ego_confirm'];
+    }
+
+    /**
      * Copies files from one destination to another by using patterns.
      *
      * @param {String} from The source directory.
