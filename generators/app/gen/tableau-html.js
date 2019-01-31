@@ -272,7 +272,7 @@ exports.run = async function() {
 
 function generateJavaScript(opts) {
     let colsCode = '';
-    colsCode += '        let cols = [\n';
+    colsCode += '        var cols = [\n';
     for (let i = 0; i < opts.columns.length; i++) {
         const COL = opts.columns[i];
 
@@ -293,12 +293,12 @@ function generateJavaScript(opts) {
     }
 
     return `function getQueryVariables() {
-    let varList = {};
+    var varList = {};
 
-    let query = window.location.search.substring(1);
-    let vars = query.split('&');
-    for (let i = 0; i < vars.length; i++) {
-        let pair = vars[i].split('=');
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
 
         varList[
             decodeURIComponent(pair[0])
@@ -309,13 +309,13 @@ function generateJavaScript(opts) {
 }
 
 (function () {
-    let url = ${ JSON.stringify(opts.url) };
+    var url = ${ JSON.stringify(opts.url) };
     {
-        let urlParams = [];
+        var urlParams = [];
 
-        let queryVars = getQueryVariables();
-        for (let varName in queryVars) {
-            let varValue = queryVars[varName];
+        var queryVars = getQueryVariables();
+        for (var varName in queryVars) {
+            var varValue = queryVars[varName];
 
             urlParams.push(
                 encodeURIComponent(varName) + '=' + encodeURIComponent(varValue)
@@ -332,12 +332,12 @@ function generateJavaScript(opts) {
         }
     }
 
-    let egoConnector = tableau.makeConnector();
+    var egoConnector = tableau.makeConnector();
 
     egoConnector.getSchema = function (schemaCallback) {
 ${ colsCode }
 
-        let tableSchema = {
+        var tableSchema = {
             id: ${ JSON.stringify(opts.name + 'Feed') },
             alias: ${ JSON.stringify("Loads '" + opts.title + "' data") },
             columns: cols
@@ -356,13 +356,13 @@ ${ colsCode }
                 // set request headers, e.g.
             },
             success: function(response, textStatus, jqXHR) {
-                let data = response${ getPropertyPath(opts.dataProperty).join('') };
+                var data = response${ getPropertyPath(opts.dataProperty).join('') };
 
-                let tableData = [];
+                var tableData = [];
 
                 if (data) {
-                    for (let i = 0; i < data.length; i++) {
-                        let newColumn = {};
+                    for (var i = 0; i < data.length; i++) {
+                        var newColumn = {};
 ${ newColCode }
                         tableData.push(
                             newColumn
