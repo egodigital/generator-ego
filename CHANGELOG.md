@@ -1,5 +1,13 @@
 # Change Log (generator-ego)
 
+## 0.17.0
+
+* added `app-electron-vuetify` generator for [Electron](https://electronjs.org/) apps, based on [Vuetify](https://vuetifyjs.com/)
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [ora](https://www.npmjs.com/package/ora) `^3.2.0`
+  * [signale](https://www.npmjs.com/package/signale) `^1.4.0`
+  * [xml-js](https://www.npmjs.com/package/xml-js) `^1.6.11`
+
 ## 0.16.2
 
 * added `app-vue-vuetify` generator for [Vue](https://vuejs.org/) based web pages with [Vuetify](https://vuetifyjs.com/)

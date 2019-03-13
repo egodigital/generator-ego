@@ -20,6 +20,7 @@ const gen_api_node_express = require('./gen/api-node-express');
 const gen_api_php_slim = require('./gen/api-php-slim');
 const gen_app_node_typescript = require('./gen/app-node-typescript');
 const gen_app_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
+const gen_app_electron_vuetify = require('./gen/app-electron-vuetify');
 const gen_app_reactnative_blank = require('./gen/app-reactnative-blank');
 const gen_app_vue_mdbootstrap = require('./gen/app-vue-mdbootstrap');
 const gen_app_vue_vuetify = require('./gen/app-vue-vuetify');
@@ -75,6 +76,9 @@ module.exports = class extends Generator {
         }, {
             name: "🖥  App (Electron - MD Bootstrap)",
             value: gen_app_electron_mdbootstrap.run,
+        }, {
+            name: "🖥  App (Electron - Vuetify)",
+            value: gen_app_electron_vuetify.run,
         }, {
             name: "📱  App (React Native - blank)",
             value: gen_app_reactnative_blank.run,
