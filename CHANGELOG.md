@@ -1,5 +1,11 @@
 # Change Log (generator-ego)
 
+## 0.18.0
+
+* `tableau-html` generator now supports objects as data source
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [opn](https://www.npmjs.com/package/opn) `^5.5.0`
+
 ## 0.17.0
 
 * added `app-electron-vuetify` generator for [Electron](https://electronjs.org/) apps, based on [Vuetify](https://vuetifyjs.com/)

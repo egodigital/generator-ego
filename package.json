@@ -1,6 +1,6 @@
 {
   "name": "generator-ego",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "private": false,
   "description": "A Yeoman generator with useful general sub generators and the possibility to expand it by JavaScript. ",
   "files": [
@@ -48,7 +48,7 @@
     "minimatch": "^3.0.4",
     "moment": "^2.24.0",
     "node-zip": "^1.1.1",
-    "opn": "^5.4.0",
+    "opn": "^5.5.0",
     "ora": "^3.2.0",
     "sanitize-filename": "^1.6.1",
     "signale": "^1.4.0",

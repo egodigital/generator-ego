@@ -17,6 +17,11 @@
 const fs = require('fs-extra');
 const sanitizeFilename = require('sanitize-filename');
 
+const DATA_PROP_TYPE_ARRAY = 'Array';
+const DATA_PROP_TYPE_OBJECT = 'Object';
+
+const IS_OBJECT_KEY = Symbol('IS_OBJECT_KEY');
+
 /**
  * A HTML generator for Tableau.
  */
@@ -34,18 +39,61 @@ exports.run = async function() {
         )
     ).trim();
 
+    // data property
+    const DATA_PROPERTY_TYPE = this.tools.toStringSafe(
+        await this.tools.promptList(
+            `What TYPE is the data property?:`,
+            [ DATA_PROP_TYPE_ARRAY, DATA_PROP_TYPE_OBJECT ],
+            {
+                default: DATA_PROP_TYPE_ARRAY
+            }
+        )
+    ).trim();
+
+    let objectKeyColumn = false;
+    if (DATA_PROP_TYPE_OBJECT === DATA_PROPERTY_TYPE) {
+        const USE_OBJECT_KEY = await this.tools.confirm(
+            `Do you want to use the KEYS of the OBJECT as column?`,
+            {
+                'default': true
+            }
+        );
+
+        if (USE_OBJECT_KEY) {
+            objectKeyColumn = this.tools.toStringSafe(
+                await this.tools.promptString(
+                    `NAME of object column:`, {
+                        validator: (val) => {
+                            return '' !== this.tools
+                                .toStringSafe(val)
+                                .trim();
+                        },
+                    }
+                )
+            ).trim();
+        }
+    }
+
+    const MIN_COLS_DISPLAY_TEXT = !!objectKeyColumn ?
+        '>= 0' : '> 0';
+    const COL_COUNT_PREDICATE = !!objectKeyColumn ?
+        ((n) => n >= 0) : ((n) => n > 0);
+    const COL_COUNT_DEFAULT = !!objectKeyColumn ?
+        0 : undefined;
+
     // # of columns
     const NUMBER_OF_COLUMNS = parseInt(
         this.tools.toStringSafe(
             await this.tools.promptString(
-                `How many COLUMNS do you need (> 0)?`, {
+                `How many COLUMNS do you need (${ MIN_COLS_DISPLAY_TEXT })?`, {
+                    default: COL_COUNT_DEFAULT,
                     validator: (val) => {
                         const NR = parseInt(
                             this.tools
                                 .toStringSafe(val)
                         );
                         if (!isNaN(NR)) {
-                            return NR > 0;
+                            return COL_COUNT_PREDICATE(NR);
                         }
 
                         return false;
@@ -60,11 +108,21 @@ exports.run = async function() {
 
     // columns
     const COLS = [];
+    if (objectKeyColumn) {
+        COLS.push({
+            name: objectKeyColumn,
+            property: IS_OBJECT_KEY,
+            type: 'string',
+        });
+    }
+
     let lastDataType = 'string';
     for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
+        const COL_NR = COLS.length + 1;
+
         const COLUMN_NAME = this.tools.toStringSafe(
             await this.tools.promptString(
-                `NAME of column #${ i + 1 }:`, {
+                `NAME of column #${ COL_NR }:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
@@ -80,7 +138,7 @@ exports.run = async function() {
         // data type
         const COLUMN_DATA_TYPE = this.tools.toStringSafe(
             await this.tools.promptList(
-                `DATA TYPE of column #${ i + 1 }`,
+                `DATA TYPE of column #${ COL_NR }`,
                 [ 'bool', 'date', 'datetime', 'float', 'geometry', 'int', 'string' ],
                 {
                     default: lastDataType,
@@ -93,7 +151,7 @@ exports.run = async function() {
 
         const COLUMN_PROPERTY = this.tools.toStringSafe(
             await this.tools.promptString(
-                `PROPERTY PATH of column #${ i + 1 }:`, {
+                `PROPERTY PATH of column #${ COL_NR }:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
@@ -205,6 +263,7 @@ exports.run = async function() {
     const OPTS = {
         columns: COLS,
         dataProperty: DATA_PROPERTY,
+        dataPropertyType: DATA_PROPERTY_TYPE,
         dir: OUT_DIR,
         method: REQUEST_METHOD,
         name: NAME_AND_TITLE.name,
@@ -286,10 +345,38 @@ function generateJavaScript(opts) {
     let newColCode = '';
     for (let i = 0; i < opts.columns.length; i++) {
         const COL = opts.columns[i];
+        if (IS_OBJECT_KEY === COL.property) {
+            newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = dataProp;\n`;
+        } else {
+            const PROPERTY_PATH = getPropertyPath(COL.property);
 
-        const PROPERTY_PATH = getPropertyPath(COL.property);
+            if (DATA_PROP_TYPE_OBJECT === opts.dataPropertyType) {
+                newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = dataRow${ PROPERTY_PATH.join('') };\n`;
+            } else {
+                newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = data[i]${ PROPERTY_PATH.join('') };\n`;
+            }
+        }
+    }
 
-        newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = data[i]${ PROPERTY_PATH.join('') };\n`;
+    let fillDataCode = '';
+    if (DATA_PROP_TYPE_OBJECT === opts.dataPropertyType) {
+        fillDataCode += `                    for (var dataProp in data) {
+                        var dataRow = data[dataProp];
+
+                        var newColumn = {};
+${ newColCode }
+                        tableData.push(
+                            newColumn
+                        );
+                    }`;
+    } else {
+        fillDataCode += `                    for (var i = 0; i < data.length; i++) {
+                        var newColumn = {};
+${ newColCode }
+                        tableData.push(
+                            newColumn
+                        );
+                    }`;
     }
 
     return `function getQueryVariables() {
@@ -361,13 +448,7 @@ ${ colsCode }
                 var tableData = [];
 
                 if (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        var newColumn = {};
-${ newColCode }
-                        tableData.push(
-                            newColumn
-                        );
-                    }
+${ fillDataCode }
                 }
 
                 table.appendRows(tableData);
