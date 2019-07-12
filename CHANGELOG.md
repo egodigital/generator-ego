@@ -1,5 +1,11 @@
 # Change Log (generator-ego)
 
+## 0.19.0
+
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [ejs](https://www.npmjs.com/package/ejs) `^2.6.2`
+  * [ora](https://www.npmjs.com/package/ora) `^3.4.0`
+
 ## 0.18.0
 
 * `tableau-html` generator now supports objects as data source
