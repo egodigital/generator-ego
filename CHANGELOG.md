@@ -1,5 +1,11 @@
 # Change Log (generator-ego)
 
+## 0.20.0
+
+* generator requires at least [Node.js 10+](https://nodejs.org/dist/latest-v10.x/docs/api/) now
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [ejs](https://www.npmjs.com/package/@egodigital/egoose) `^6.7.1`
+
 ## 0.19.0
 
 * updated the following [npm](https://www.npmjs.com/) modules:
