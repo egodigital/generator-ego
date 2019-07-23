@@ -126,7 +126,7 @@ exports.run = async function() {
 };
 ```
 
-To test the your new generator, simply execute
+To test your new generator, simply execute
 
 ```bash
 yo ego
