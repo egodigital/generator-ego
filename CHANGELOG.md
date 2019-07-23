@@ -1,6 +1,6 @@
 # Change Log (generator-ego)
 
-## 0.21.0
+## 0.21.2
 
 * some refactoring for better [contribution](https://github.com/egodigital/generator-ego/blob/master/CONTRIBUTION.md)
 * updated the following [npm](https://www.npmjs.com/) modules:
