@@ -24,7 +24,7 @@ function createIndexHtml(opts) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>${ this.tools.encodeHtml(opts.title) }</title>
+    <title>${ this.tools.encodeHtml(opts.title)}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons">
   </head>
@@ -87,13 +87,19 @@ function createPackageJSON(opts) {
             "not ie <= 8"
         ],
         "main": "background.js"
-    };      
+    };
 }
+
+// information about that generator
+exports.about = {
+    displayName: 'App (Electron - Vuetify)',
+    icon: '🖥',
+};
 
 /**
  * A generator for an Electron app with vuetify.
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('app-electron-vuetify');
 
     const NAME_AND_TITLE = await this.tools
@@ -143,14 +149,14 @@ exports.run = async function() {
         const INDEX_HTML_DEST = OUT_DIR + '/public/index.html';
 
         const NEW_CONTENT = createIndexHtml.apply(
-            this, [ OPTS ]
+            this, [OPTS]
         );
 
-         fs.writeFileSync(
+        fs.writeFileSync(
             INDEX_HTML_DEST,
             NEW_CONTENT,
             'utf8'
-         );
+        );
     }
 
     await this.tools

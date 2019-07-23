@@ -16,16 +16,7 @@
 
 const chalk = require('chalk');
 const fs = require('fs');
-const gen_api_node_express = require('./gen/api-node-express');
-const gen_api_php_slim = require('./gen/api-php-slim');
-const gen_app_node_typescript = require('./gen/app-node-typescript');
-const gen_app_electron_mdbootstrap = require('./gen/app-electron-mdbootstrap');
-const gen_app_electron_vuetify = require('./gen/app-electron-vuetify');
-const gen_app_reactnative_blank = require('./gen/app-reactnative-blank');
-const gen_app_vue_mdbootstrap = require('./gen/app-vue-mdbootstrap');
-const gen_app_vue_vuetify = require('./gen/app-vue-vuetify');
-const gen_html5 = require('./gen/html5');
-const gen_tableau_html = require('./gen/tableau-html');
+const fsExtra = require('fs-extra');
 const Generator = require('yeoman-generator');
 const os = require('os');
 const path = require('path');
@@ -61,43 +52,58 @@ module.exports = class extends Generator {
         process.stdout.write(
             `${chalk.blueBright('e') + chalk.reset('.') + chalk.blueBright('GO') + chalk.reset(' Digital GmbH <') + chalk.white('https://e-go-digital.com') + chalk.reset('>')}${os.EOL}`
         );
-        
+
         process.stdout.write(
             `${os.EOL}${chalk.reset()}`
         );
 
         // build-in generators
-        const BUILDIN_CHOICES = [{
-            name: "🛠  API (Node - Express ^4.0)",
-            value: gen_api_node_express.run,
-        }, {
-            name: "🛠  API (PHP - Slim ^3.0)",
-            value: gen_api_php_slim.run,
-        }, {
-            name: "🖥  App (Electron - MD Bootstrap)",
-            value: gen_app_electron_mdbootstrap.run,
-        }, {
-            name: "🖥  App (Electron - Vuetify)",
-            value: gen_app_electron_vuetify.run,
-        }, {
-            name: "📱  App (React Native - blank)",
-            value: gen_app_reactnative_blank.run,
-        }, {
-            name: "🛠  App (Node - TypeScript ^3.0)",
-            value: gen_app_node_typescript.run,
-        }, {
-            name: "🌐  App (Vue - MD Bootstrap)",
-            value: gen_app_vue_mdbootstrap.run,
-        }, {
-            name: "🌐  App (Vue - Vuetify)",
-            value: gen_app_vue_vuetify.run,
-        }, {
-            name: "🌐  HTML 5",
-            value: gen_html5.run,
-        }, {
-            name: "📊  Tableau Connector",
-            value: gen_tableau_html.run,
-        }];
+        const BUILDIN_CHOICES = [];
+        {
+            const GEN_DIR = path.resolve(
+                path.join(__dirname, 'gen')
+            );
+
+            for (const ITEM of await fsExtra.readdir(GEN_DIR)) {
+                if (!ITEM.endsWith('.js')) {
+                    continue;
+                }
+
+                const GENERATOR_FILE = require.resolve(
+                    path.join(GEN_DIR, ITEM)
+                );
+
+                const GENERATOR_MODULE = require(
+                    GENERATOR_FILE
+                );
+
+                let icon;
+                let displayName;
+
+                const ABOUT = GENERATOR_MODULE.about;
+                if (ABOUT) {
+                    displayName = ABOUT.displayName;
+                    icon = ABOUT.icon;
+                }
+
+                icon = this.tools
+                    .toStringSafe(icon)
+                    .trim();
+
+                displayName = this.tools
+                    .toStringSafe(displayName)
+                    .trim();
+                if ('' === displayName) {
+                    displayName = path.basename(GENERATOR_FILE);
+                }
+
+                BUILDIN_CHOICES.push({
+                    name: `${'' !== icon ? (icon + '  ') : ''}${displayName}`,
+                    value: GENERATOR_MODULE.run,
+                    sortBy: displayName.toLowerCase(),
+                });
+            }
+        }
 
         const CUSTOM_GENERATORS_FILE = path.resolve(
             path.join(
@@ -142,7 +148,7 @@ module.exports = class extends Generator {
                                         name: `${optionName} (${chalk.yellow(relativePath)})`,
                                         value: () => {
                                             return SCRIPT['module'].run
-                                                                   .apply(this, []);
+                                                .apply(this, []);
                                         },
                                     });
                                 })(this.tools.toStringSafe(GENERATOR_FUNC), NAME);
@@ -154,11 +160,15 @@ module.exports = class extends Generator {
         }
 
         this.generators = await this.prompt([{
-            type    : 'list',
-            name    : 'ego_selected_generator',
-            message : 'Please select a generator:',
+            type: 'list',
+            name: 'ego_selected_generator',
+            message: 'Please select a generator:',
             choices: CUSTOM_CHOISES.concat(
-                BUILDIN_CHOICES
+                BUILDIN_CHOICES.sort((x, y) => {
+                    return this.tools
+                        .compareValuesBy(x, y,
+                            bc => bc.sortBy);
+                }),
             ),
         }]);
     }

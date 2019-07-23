@@ -41,19 +41,19 @@ function createPackageJson() {
                 "dist/electron/**/*"
             ],
             "dmg": {
-            "contents": [
-                {
-                    "x": 410,
-                    "y": 150,
-                    "type": "link",
-                    "path": "/Applications"
-                },
-                {
-                    "x": 130,
-                    "y": 150,
-                    "type": "file"
-                }
-            ]
+                "contents": [
+                    {
+                        "x": 410,
+                        "y": 150,
+                        "type": "link",
+                        "path": "/Applications"
+                    },
+                    {
+                        "x": 130,
+                        "y": 150,
+                        "type": "file"
+                    }
+                ]
             },
             "mac": {
                 "icon": "build/icons/icon.icns"
@@ -122,10 +122,16 @@ function createPackageJson() {
     };
 }
 
+// information about that generator
+exports.about = {
+    displayName: 'App (Electron - MD Bootstrap)',
+    icon: '🖥',
+};
+
 /**
  * A generator for an Electron app.
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('app-electron-mdbootstrap');
 
     const NAME_AND_TITLE = await this.tools
@@ -175,13 +181,13 @@ exports.run = async function() {
             INDEX_EJS_SRC,
             'utf8'
         ).split('{{ EGO-PAGE-TITLE }}')
-         .join(this.tools.encodeHtml(NAME_AND_TITLE.title));
+            .join(this.tools.encodeHtml(NAME_AND_TITLE.title));
 
-         fs.writeFileSync(
+        fs.writeFileSync(
             INDEX_EJS_DEST,
             NEW_CONTENT,
             'utf8'
-         );
+        );
     }
 
     await this.tools

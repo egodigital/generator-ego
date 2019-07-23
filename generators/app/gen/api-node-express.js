@@ -25,10 +25,16 @@ const NPM_MODULE_JOI = 'joi';
 const NPM_MODULE_LODASH = 'lodash';
 const NPM_MODULE_MOMENTJS = 'Moment.js';
 
+// information about that generator
+exports.about = {
+    displayName: 'API (Node - Express ^4.0)',
+    icon: '🛠',
+};
+
 /**
  * A generator for Node.js based APIs (Express).
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('api-node-express');
 
     const NAME = this.tools.toStringSafe(
@@ -59,7 +65,7 @@ exports.run = async function() {
     const DATABASE = this.tools.toStringSafe(
         await this.tools.promptList(
             `What DATABASE BACKEND to you like to use?`,
-            [ DB_NONE, DB_MONGO ],
+            [DB_NONE, DB_MONGO],
             {
                 default: DB_MONGO,
             }
@@ -91,7 +97,7 @@ exports.run = async function() {
     const AUTH_TYPE = this.tools.toStringSafe(
         await this.tools.promptList(
             `What kind of AUTHORIZATION is required?`,
-            [ AUTH_NONE, AUTH_BEARER ],
+            [AUTH_NONE, AUTH_BEARER],
             {
                 default: AUTH_BEARER,
             }
@@ -113,22 +119,22 @@ exports.run = async function() {
 
     const GENERATE_FILE = (file, func) => {
         return this.tools.withSpinner(
-            `Generating '${ file }' ...`,
+            `Generating '${file}' ...`,
             async (spinner) => {
                 try {
                     const RESULT = await Promise.resolve(
                         func(spinner)
                     );
 
-                    spinner.succeed(`File '${ file }' generated.`);
+                    spinner.succeed(`File '${file}' generated.`);
 
                     return RESULT;
                 } catch (e) {
-                    spinner.fail(`Could not generate file '${ file }': ${ this.tools.toStringSafe(e) }`);
+                    spinner.fail(`Could not generate file '${file}': ${this.tools.toStringSafe(e)}`);
 
                     process.exit(1);
                 }
-            }  
+            }
         );
     };
 
@@ -216,7 +222,7 @@ exports.run = async function() {
 
         APIDOC_JSON.name = NAME_INTERNAL;
         APIDOC_JSON.description = DESCRIPTION;
-        APIDOC_JSON.title = `${ NAME } API`;
+        APIDOC_JSON.title = `${NAME} API`;
 
         fs.writeFileSync(
             OUT_DIR + '/apidoc.json',
@@ -263,7 +269,7 @@ exports.run = async function() {
         TEMPLATES_DIR, OUT_DIR, {
             name_internal: NAME_INTERNAL,
             title: NAME,
-            uses_api_key: [ AUTH_BEARER ].indexOf(OPTS.auth_type) > -1,
+            uses_api_key: [AUTH_BEARER].indexOf(OPTS.auth_type) > -1,
             uses_mongodb: DB_MONGO === OPTS.database
         }
     );
@@ -293,7 +299,7 @@ function createAPIDocJSON(opts) {
         "version": "0.0.1",
         "description": null,
         "title": null,
-        "url" : "http://localhost:8080"
+        "url": "http://localhost:8080"
     };
 }
 
@@ -360,7 +366,7 @@ export type WithDatabaseAction<TResult = any> = (db: mongodb.Database, useTransa
         IMPORT_MAPPINGS['mongodb'] = './mongodb';
     }
 
-    return `${ getTSHeader() }${ toImportList(IMPORT_MAPPINGS) }
+    return `${getTSHeader()}${toImportList(IMPORT_MAPPINGS)}
 
 /**
  * An API context.
@@ -375,7 +381,7 @@ export interface ApiContext {
      * The global logger instance.
      */
     readonly logger: egoose.Logger;
-${ withDatabaseCode }}
+${ withDatabaseCode}}
 
 /**
  * An extended request context of an API call.
@@ -392,7 +398,7 @@ export interface RequestWithLogger extends express.Request {
      */
     readonly logger: egoose.Logger;
 }
-${ withDatabaseActionCode }`;
+${ withDatabaseActionCode}`;
 }
 
 // [CREATE] index.ts
@@ -507,7 +513,7 @@ function createIndexTS(opts) {
         IMPORT_MAPPINGS['mongoose'] = 'mongoose';
     }
 
-    return `${ getTSHeader() }${ toImportList(IMPORT_MAPPINGS) }
+    return `${getTSHeader()}${toImportList(IMPORT_MAPPINGS)}
 
 type InitApiAction = (api: contracts.ApiContext, root: express.Router) => void;
 
@@ -522,7 +528,7 @@ export function createHost() {
     const LOGGER = egoose.createLogger();
 
     const API: contracts.ApiContext = {
-        host: HOST,${ withDatabaseCode }
+        host: HOST,${ withDatabaseCode}
         logger: LOGGER,
     };
 
@@ -538,7 +544,7 @@ export function createHost() {
 
         return next();
     });
-${ logToDatabaseActionCode }
+${ logToDatabaseActionCode}
     if (egoose.IS_DEV || egoose.IS_LOCAL_DEV) {
         // log any request in development mode(s)
 
@@ -567,7 +573,7 @@ ${ logToDatabaseActionCode }
     {
         const v1_ROOT = express.Router();
         HOST.use('/api/v1', v1_ROOT);
-${ authCode }
+${ authCode}
         // extend that list if other
         // action for initializing endpoints
         const INIT_ACTION: InitApiAction[] = [
@@ -646,7 +652,7 @@ function createPackageJson(opts) {
             "test": "npm run build && ./node_modules/.bin/mocha ./dist/test/**/*.js"
         }
     };
-    
+
     if (DB_MONGO === opts.database) {
         PACKAGE_JSON.devDependencies['@types/mongoose'] = '5.2.17';
     }
@@ -680,7 +686,7 @@ function toImportList(importMappings) {
     const IMPORTS = [];
     for (const IM of Object.keys(importMappings)) {
         IMPORTS.push(
-            `import * as ${ IM } from '${ importMappings[IM] }';`
+            `import * as ${IM} from '${importMappings[IM]}';`
         );
     }
 

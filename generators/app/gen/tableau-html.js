@@ -22,10 +22,15 @@ const DATA_PROP_TYPE_OBJECT = 'Object';
 
 const IS_OBJECT_KEY = Symbol('IS_OBJECT_KEY');
 
+exports.about = {
+    displayName: 'Tableau Connector',
+    icon: '🌐',
+};
+
 /**
  * A HTML generator for Tableau.
  */
-exports.run = async function() {
+exports.run = async function () {
     const NAME_AND_TITLE = await this.tools
         .askForNameAndTitle();
     if (!NAME_AND_TITLE) {
@@ -43,7 +48,7 @@ exports.run = async function() {
     const DATA_PROPERTY_TYPE = this.tools.toStringSafe(
         await this.tools.promptList(
             `What TYPE is the data property?:`,
-            [ DATA_PROP_TYPE_ARRAY, DATA_PROP_TYPE_OBJECT ],
+            [DATA_PROP_TYPE_ARRAY, DATA_PROP_TYPE_OBJECT],
             {
                 default: DATA_PROP_TYPE_ARRAY
             }
@@ -85,7 +90,7 @@ exports.run = async function() {
     const NUMBER_OF_COLUMNS = parseInt(
         this.tools.toStringSafe(
             await this.tools.promptString(
-                `How many COLUMNS do you need (${ MIN_COLS_DISPLAY_TEXT })?`, {
+                `How many COLUMNS do you need (${MIN_COLS_DISPLAY_TEXT})?`, {
                     default: COL_COUNT_DEFAULT,
                     validator: (val) => {
                         const NR = parseInt(
@@ -122,7 +127,7 @@ exports.run = async function() {
 
         const COLUMN_NAME = this.tools.toStringSafe(
             await this.tools.promptString(
-                `NAME of column #${ COL_NR }:`, {
+                `NAME of column #${COL_NR}:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
@@ -138,8 +143,8 @@ exports.run = async function() {
         // data type
         const COLUMN_DATA_TYPE = this.tools.toStringSafe(
             await this.tools.promptList(
-                `DATA TYPE of column #${ COL_NR }`,
-                [ 'bool', 'date', 'datetime', 'float', 'geometry', 'int', 'string' ],
+                `DATA TYPE of column #${COL_NR}`,
+                ['bool', 'date', 'datetime', 'float', 'geometry', 'int', 'string'],
                 {
                     default: lastDataType,
                 }
@@ -151,7 +156,7 @@ exports.run = async function() {
 
         const COLUMN_PROPERTY = this.tools.toStringSafe(
             await this.tools.promptString(
-                `PROPERTY PATH of column #${ COL_NR }:`, {
+                `PROPERTY PATH of column #${COL_NR}:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
@@ -194,7 +199,7 @@ exports.run = async function() {
     const REQUEST_METHOD = this.tools.toStringSafe(
         await this.tools.promptList(
             `HTTP method for the request:`,
-            [ 'GET', 'POST', 'PATCH', 'PUT' ],
+            ['GET', 'POST', 'PATCH', 'PUT'],
             {
                 default: 'GET',
             }
@@ -233,7 +238,7 @@ exports.run = async function() {
     for (let i = 0; i < NUMBER_OF_PARAMETERS; i++) {
         const PARAM_NAME = this.tools.toStringSafe(
             await this.tools.promptString(
-                `NAME of parameter #${ i + 1 }:`, {
+                `NAME of parameter #${i + 1}:`, {
                     validator: (val) => {
                         return '' !== this.tools
                             .toStringSafe(val)
@@ -248,7 +253,7 @@ exports.run = async function() {
 
         const PARAM_DEFAULT = this.tools.toStringSafe(
             await this.tools.promptString(
-                `DEFAULT VALUE of parameter #${ i + 1 }:`,
+                `DEFAULT VALUE of parameter #${i + 1}:`,
             )
         );
 
@@ -272,37 +277,37 @@ exports.run = async function() {
         url: REQUEST_URL,
     };
 
-    const HTML_FILENAME = `${ sanitizeFilename(OPTS.name) }WDC.html`;
-    const JAVASCRIPT_FILENAME = `${ sanitizeFilename(OPTS.name) }WDC.js`;
+    const HTML_FILENAME = `${sanitizeFilename(OPTS.name)}WDC.html`;
+    const JAVASCRIPT_FILENAME = `${sanitizeFilename(OPTS.name)}WDC.js`;
 
     OPTS.htmlFile = HTML_FILENAME;
     OPTS.jsFile = JAVASCRIPT_FILENAME;
 
     const HTML = generateHtml.apply(
-        this, [ OPTS ]
+        this, [OPTS]
     );
     const JAVASCRIPT = generateJavaScript.apply(
-        this, [ OPTS ]
+        this, [OPTS]
     );
-    
+
     const GENERATE_FILE = (file, func) => {
         return this.tools.withSpinner(
-            `Generating '${ file }' ...`,
+            `Generating '${file}' ...`,
             async (spinner) => {
                 try {
                     const RESULT = await Promise.resolve(
                         func(spinner)
                     );
 
-                    spinner.succeed(`File '${ file }' generated.`);
+                    spinner.succeed(`File '${file}' generated.`);
 
                     return RESULT;
                 } catch (e) {
-                    spinner.fail(`Could not generate file '${ file }': ${ this.tools.toStringSafe(e) }`);
+                    spinner.fail(`Could not generate file '${file}': ${this.tools.toStringSafe(e)}`);
 
                     process.exit(1);
                 }
-            }  
+            }
         );
     };
 
@@ -336,8 +341,8 @@ function generateJavaScript(opts) {
         const COL = opts.columns[i];
 
         colsCode += '            {\n';
-        colsCode += `                id: ${ JSON.stringify(COL.name) },\n`;
-        colsCode += `                dataType: tableau.dataTypeEnum.${ COL.type }\n`;
+        colsCode += `                id: ${JSON.stringify(COL.name)},\n`;
+        colsCode += `                dataType: tableau.dataTypeEnum.${COL.type}\n`;
         colsCode += '            },\n';
     }
     colsCode += '        ];';
@@ -346,14 +351,14 @@ function generateJavaScript(opts) {
     for (let i = 0; i < opts.columns.length; i++) {
         const COL = opts.columns[i];
         if (IS_OBJECT_KEY === COL.property) {
-            newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = dataProp;\n`;
+            newColCode += `                        newColumn[${JSON.stringify(COL.name)}] = dataProp;\n`;
         } else {
             const PROPERTY_PATH = getPropertyPath(COL.property);
 
             if (DATA_PROP_TYPE_OBJECT === opts.dataPropertyType) {
-                newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = dataRow${ PROPERTY_PATH.join('') };\n`;
+                newColCode += `                        newColumn[${JSON.stringify(COL.name)}] = dataRow${PROPERTY_PATH.join('')};\n`;
             } else {
-                newColCode += `                        newColumn[${ JSON.stringify(COL.name) }] = data[i]${ PROPERTY_PATH.join('') };\n`;
+                newColCode += `                        newColumn[${JSON.stringify(COL.name)}] = data[i]${PROPERTY_PATH.join('')};\n`;
             }
         }
     }
@@ -364,7 +369,7 @@ function generateJavaScript(opts) {
                         var dataRow = data[dataProp];
 
                         var newColumn = {};
-${ newColCode }
+${ newColCode}
                         tableData.push(
                             newColumn
                         );
@@ -372,7 +377,7 @@ ${ newColCode }
     } else {
         fillDataCode += `                    for (var i = 0; i < data.length; i++) {
                         var newColumn = {};
-${ newColCode }
+${ newColCode}
                         tableData.push(
                             newColumn
                         );
@@ -396,7 +401,7 @@ ${ newColCode }
 }
 
 (function () {
-    var url = ${ JSON.stringify(opts.url) };
+    var url = ${ JSON.stringify(opts.url)};
     {
         var urlParams = [];
 
@@ -414,7 +419,7 @@ ${ newColCode }
         }
 
         if (urlParams.length > 0) {
-            url += ${ JSON.stringify(opts.url.indexOf('?') > -1 ? '&' : '?') };
+            url += ${ JSON.stringify(opts.url.indexOf('?') > -1 ? '&' : '?')};
             url += urlParams.join('&');
         }
     }
@@ -422,11 +427,11 @@ ${ newColCode }
     var egoConnector = tableau.makeConnector();
 
     egoConnector.getSchema = function (schemaCallback) {
-${ colsCode }
+${ colsCode}
 
         var tableSchema = {
-            id: ${ JSON.stringify(opts.name + 'Feed') },
-            alias: ${ JSON.stringify("Loads '" + opts.title + "' data") },
+            id: ${ JSON.stringify(opts.name + 'Feed')},
+            alias: ${ JSON.stringify("Loads '" + opts.title + "' data")},
             columns: cols
         };
 
@@ -438,17 +443,17 @@ ${ colsCode }
     egoConnector.getData = function(table, done) {
         $.ajax({
             url: url,
-            method: ${ JSON.stringify(opts.method) },
+            method: ${ JSON.stringify(opts.method)},
             beforeSend: function(jqXHR) {
                 // set request headers, e.g.
             },
             success: function(response, textStatus, jqXHR) {
-                var data = response${ getPropertyPath(opts.dataProperty).join('') };
+                var data = response${ getPropertyPath(opts.dataProperty).join('')};
 
                 var tableData = [];
 
                 if (data) {
-${ fillDataCode }
+${ fillDataCode}
                 }
 
                 table.appendRows(tableData);
@@ -464,7 +469,7 @@ ${ fillDataCode }
 
 $(document).ready(function () {
     $("#ego-submit-btn").click(function () {
-        tableau.connectionName = ${ JSON.stringify(opts.title + ' Feed') };
+        tableau.connectionName = ${ JSON.stringify(opts.title + ' Feed')};
         tableau.submit();
     });
 });
@@ -491,7 +496,7 @@ function generateHtml(opts) {
 
     return `<html>
     <head>
-        <title>&quot;${ this.tools.encodeHtml(opts.title) }&quot; Feed</title>
+        <title>&quot;${ this.tools.encodeHtml(opts.title)}&quot; Feed</title>
         <meta http-equiv="Cache-Control" content="no-store" />
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
@@ -513,9 +518,9 @@ function generateHtml(opts) {
         <div class="container" id="ego-content">
             <div class="row vertical-center-row">
                 <div class="text-center col-md-4 col-md-offset-4">
-${ paramListCode }
+${ paramListCode}
                     <button type="button" id="ego-submit-btn" class="btn btn-success" style="margin: 10px;">
-                        Get &quot;${ this.tools.encodeHtml(opts.title) }&quot; Data
+                        Get &quot;${ this.tools.encodeHtml(opts.title)}&quot; Data
                     </button>
                 </div>
             </div>
@@ -551,7 +556,7 @@ ${ paramListCode }
         
         </style>
 
-        <script src="${ opts.jsFile }" type="text/javascript"></script>
+        <script src="${ opts.jsFile}" type="text/javascript"></script>
     </body>
 </html>`;
 }
@@ -562,5 +567,5 @@ function getPropertyPath(col) {
     }
 
     return col.split(".")
-        .map(p => `[${ JSON.stringify(p.trim()) }]`);
+        .map(p => `[${JSON.stringify(p.trim())}]`);
 }

@@ -14,10 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// information about that generator
+exports.about = {
+    displayName: 'API (PHP - Slim ^3.0)',
+    icon: '🛠',
+};
+
 /**
  * A generator for PHP based APIs (Slim).
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('api-php-slim');
 
     const NAME_AND_TITLE = await this.tools

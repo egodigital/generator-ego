@@ -53,10 +53,16 @@ function createPackageJson(opts) {
     return PACKAGE_JSON;
 }
 
+// information about that generator
+exports.about = {
+    displayName: 'App (Node - TypeScript ^3.0)',
+    icon: '🛠',
+};
+
 /**
  * A generator for empty Node.js applications, written in TypeScript.
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('app-node-typescript');
 
     const NAME = this.tools.toStringSafe(
@@ -107,28 +113,28 @@ exports.run = async function() {
 
     const GENERATE_FILE = (file, func) => {
         return this.tools.withSpinner(
-            `Generating '${ file }' ...`,
+            `Generating '${file}' ...`,
             async (spinner) => {
                 try {
                     const RESULT = await Promise.resolve(
                         func(spinner)
                     );
 
-                    spinner.succeed(`File '${ file }' generated.`);
+                    spinner.succeed(`File '${file}' generated.`);
 
                     return RESULT;
                 } catch (e) {
-                    spinner.fail(`Could not generate file '${ file }': ${ this.tools.toStringSafe(e) }`);
+                    spinner.fail(`Could not generate file '${file}': ${this.tools.toStringSafe(e)}`);
 
                     process.exit(1);
                 }
-            }  
+            }
         );
     };
 
     const FILES_TO_OPEN_IN_VSCODE = [
         OUT_DIR + '/src/index.ts',
-    ];    
+    ];
 
     // copy all files
     {

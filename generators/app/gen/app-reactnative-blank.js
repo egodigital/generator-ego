@@ -43,7 +43,7 @@ function createAppJson() {
                 "supportsTablet": true
             }
         }
-    };      
+    };
 }
 
 function createPackageJson() {
@@ -69,10 +69,16 @@ function createPackageJson() {
     }
 }
 
+// information about that generator
+exports.about = {
+    displayName: 'App (React Native - blank)',
+    icon: '📱',
+};
+
 /**
  * A generator for a blank React Native app.
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('app-reactnative-blank');
 
     const NAME_AND_TITLE = await this.tools

@@ -100,13 +100,19 @@ function createPackageJSON(opts) {
             "last 2 versions",
             "not ie <= 8"
         ]
-    };      
+    };
 }
+
+// information about that generator
+exports.about = {
+    displayName: 'App (Vue - MD Bootstrap)',
+    icon: '🌐',
+};
 
 /**
  * A generator for Vue based web pages with MD Bootstrap Free.
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('app-vue-mdbootstrap');
 
     const NAME_AND_TITLE = await this.tools
@@ -139,22 +145,22 @@ exports.run = async function() {
 
     const GENERATE_FILE = (file, func) => {
         return this.tools.withSpinner(
-            `Generating '${ file }' ...`,
+            `Generating '${file}' ...`,
             async (spinner) => {
                 try {
                     const RESULT = await Promise.resolve(
                         func(spinner)
                     );
 
-                    spinner.succeed(`File '${ file }' generated.`);
+                    spinner.succeed(`File '${file}' generated.`);
 
                     return RESULT;
                 } catch (e) {
-                    spinner.fail(`Could not generate file '${ file }': ${ this.tools.toStringSafe(e) }`);
+                    spinner.fail(`Could not generate file '${file}': ${this.tools.toStringSafe(e)}`);
 
                     process.exit(1);
                 }
-            }  
+            }
         );
     };
 
@@ -162,8 +168,8 @@ exports.run = async function() {
     this.tools.copy(
         TEMPLATES_DIR,
         OUT_DIR,
-        [ '**' ],
-        [ '/index.ejs' ]
+        ['**'],
+        ['/index.ejs']
     );
 
     // package.json

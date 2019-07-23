@@ -1,10 +1,17 @@
 # Change Log (generator-ego)
 
+## 0.21.0
+
+* some refactoring for better [contribution](https://github.com/egodigital/generator-ego/blob/master/CONTRIBUTION.md)
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [@egodigital/egoose](https://www.npmjs.com/package/@egodigital/egoose) `^6.9.1`
+* code cleanups and improvements
+
 ## 0.20.1
 
 * generator requires at least [Node.js 10+](https://nodejs.org/dist/latest-v10.x/docs/api/) now
 * updated the following [npm](https://www.npmjs.com/) modules:
-  * [@egodigital/egoose](https://www.npmjs.com/package/@egodigital/egoose) `^6.9.1`
+  * [@egodigital/egoose](https://www.npmjs.com/package/@egodigital/egoose) `^6.7.1`
 
 ## 0.19.0
 

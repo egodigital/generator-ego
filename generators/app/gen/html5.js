@@ -14,10 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+exports.about = {
+    displayName: 'HTML 5',
+    icon: '🌐',
+};
+
 /**
  * A HTML 5 generator.
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('html5');
 
     const NAME_AND_TITLE = await this.tools

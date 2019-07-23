@@ -50,10 +50,15 @@ function createPackageJSON(opts) {
     };
 }
 
+exports.about = {
+    displayName: 'App (Vue - Vuetify)',
+    icon: '🌐',
+};
+
 /**
  * A generator for Vue based web pages with Vuetify.
  */
-exports.run = async function() {
+exports.run = async function () {
     const TEMPLATES_DIR = this.templatePath('app-vue-vuetify');
 
     const NAME_AND_TITLE = await this.tools
@@ -99,22 +104,22 @@ exports.run = async function() {
 
     const GENERATE_FILE = (file, func) => {
         return this.tools.withSpinner(
-            `Generating '${ file }' ...`,
+            `Generating '${file}' ...`,
             async (spinner) => {
                 try {
                     const RESULT = await Promise.resolve(
                         func(spinner)
                     );
 
-                    spinner.succeed(`File '${ file }' generated.`);
+                    spinner.succeed(`File '${file}' generated.`);
 
                     return RESULT;
                 } catch (e) {
-                    spinner.fail(`Could not generate file '${ file }': ${ this.tools.toStringSafe(e) }`);
+                    spinner.fail(`Could not generate file '${file}': ${this.tools.toStringSafe(e)}`);
 
                     process.exit(1);
                 }
-            }  
+            }
         );
     };
 
@@ -122,7 +127,7 @@ exports.run = async function() {
     this.tools.copy(
         TEMPLATES_DIR,
         OUT_DIR,
-        [ '**' ],
+        ['**'],
     );
 
     // package.json
@@ -152,7 +157,7 @@ exports.run = async function() {
             INDEX_HTML_SRC,
             'utf8'
         ).split('{{ EGO-PAGE-TITLE }}')
-         .join(this.tools.encodeHtml(TITLE));
+            .join(this.tools.encodeHtml(TITLE));
 
         fs.writeFileSync(
             INDEX_HTML_DEST,
