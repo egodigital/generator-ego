@@ -26,8 +26,10 @@ function createPackageJSON(opts) {
             "build": "vue-cli-service build"
         },
         "dependencies": {
+            "@fortawesome/fontawesome-free": "^5.8.2",
             "core-js": "^2.6.5",
             "register-service-worker": "^1.6.2",
+            "roboto-fontface": "*",
             "vue": "^2.6.10",
             "vue-router": "^3.0.3",
             "vuetify": "^2.0.0",
@@ -57,7 +59,7 @@ function createPackageJSON(opts) {
 }
 
 exports.about = {
-    displayName: 'App (Vue - Vuetify)',
+    displayName: 'App (Vue - Vuetify ^2.0)',
     icon: '🌐',
 };
 
