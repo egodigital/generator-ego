@@ -1,5 +1,9 @@
 # Change Log (generator-ego)
 
+## 0.22.0
+
+* updated `app-vue-vuetify` to [Vuetify 2](https://github.com/vuetifyjs/vuetify/releases/v2.0.0)
+
 ## 0.21.2
 
 * some refactoring for better [contribution](https://github.com/egodigital/generator-ego/blob/master/CONTRIBUTION.md)

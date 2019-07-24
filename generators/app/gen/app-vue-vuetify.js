@@ -23,30 +23,36 @@ function createPackageJSON(opts) {
         "version": "0.0.1",
         "scripts": {
             "dev": "vue-cli-service serve",
-            "build": "vue-cli-service build",
-            "lint": "vue-cli-service lint"
+            "build": "vue-cli-service build"
         },
         "dependencies": {
-            "material-design-icons-iconfont": "^3.0.3",
-            "roboto-fontface": "*",
-            "vue": "^2.5.21",
-            "vue-router": "^3.0.1",
-            "vuetify": "^1.3.0",
+            "core-js": "^2.6.5",
+            "register-service-worker": "^1.6.2",
+            "vue": "^2.6.10",
+            "vue-router": "^3.0.3",
+            "vuetify": "^2.0.0",
             "vuex": "^3.0.1"
         },
         "devDependencies": {
-            "@vue/cli-plugin-babel": "^3.3.0",
-            "@vue/cli-plugin-eslint": "^3.3.0",
-            "@vue/cli-service": "^3.3.0",
-            "babel-eslint": "^10.0.1",
-            "eslint": "^5.8.0",
-            "eslint-plugin-vue": "^5.0.0",
-            "stylus": "^0.54.5",
-            "stylus-loader": "^3.0.1",
-            "vue-cli-plugin-vuetify": "^0.4.6",
-            "vue-template-compiler": "^2.5.21",
-            "vuetify-loader": "^1.0.5"
-        }
+            "@vue/cli-plugin-babel": "^3.9.0",
+            "@vue/cli-plugin-pwa": "^3.9.0",
+            "@vue/cli-service": "^3.9.0",
+            "node-sass": "^4.9.0",
+            "sass": "^1.17.4",
+            "sass-loader": "^7.1.0",
+            "vue-cli-plugin-vuetify": "^0.6.1",
+            "vue-template-compiler": "^2.6.10",
+            "vuetify-loader": "^1.2.2"
+        },
+        "postcss": {
+            "plugins": {
+                "autoprefixer": {}
+            }
+        },
+        "browserslist": [
+            "> 1%",
+            "last 2 versions"
+        ]
     };
 }
 
@@ -169,7 +175,7 @@ exports.run = async function () {
     // .gitignore
     this.tools.createGitIgnore(OUT_DIR, [
         '.DS_Store',
-        'node_modules/',
+        'node_modules',
         '/dist',
         '.env.local',
         '.env.*.local',
