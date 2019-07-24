@@ -95,6 +95,7 @@ exports.run = async function() {
             }
         )
     ).trim();
+
     const DESCRIPTION = this.tools.toStringSafe(
         await this.tools.promptString(
             `Enter the DESCRIPTION of your project:`, {
@@ -104,8 +105,9 @@ exports.run = async function() {
     ).trim();
 
     // create output directory
+    // based on the project name
     const OUT_DIR = this.tools
-        .mkDestinationDir(NAME_LOWER);
+        .mkDestinationDir(NAME.toLowerCase());
 
 
     // TODO: implement your generator
