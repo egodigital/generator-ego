@@ -1,8 +1,8 @@
 {
   "name": "generator-ego",
-  "version": "0.22.1",
+  "version": "0.23.0",
   "private": false,
-  "description": "A Yeoman generator with useful general sub generators and the possibility to expand it by JavaScript. ",
+  "description": "A Yeoman generator with useful general sub generators and the possibility to expand it by JavaScript.",
   "files": [
     "generators"
   ],
@@ -26,7 +26,10 @@
     "typescript",
     "docker",
     "ecmascript",
-    "javascript"
+    "javascript",
+    "vuetify",
+    "electron",
+    "react-native"
   ],
   "author": "e.GO Digital GmbH, Aachen, Germany",
   "license": "GPL-3.0",

@@ -1,5 +1,9 @@
 # Change Log (generator-ego)
 
+## 0.23.0
+
+* updated `app-electron-vuetify` to [Vuetify 2](https://github.com/vuetifyjs/vuetify/releases/v2.0.0)
+
 ## 0.22.1
 
 * updated `app-vue-vuetify` to [Vuetify 2](https://github.com/vuetifyjs/vuetify/releases/v2.0.0)

@@ -25,12 +25,10 @@ function createIndexHtml(opts) {
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>${ this.tools.encodeHtml(opts.title)}</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons">
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but vue_app doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong>We're sorry but ${ this.tools.encodeHtml(opts.title)} doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
@@ -46,35 +44,35 @@ function createPackageJSON(opts) {
         "scripts": {
             "serve": "vue-cli-service serve",
             "build": "vue-cli-service build",
-            "lint": "vue-cli-service lint",
             "electron:build": "vue-cli-service electron:build",
             "electron:serve": "vue-cli-service electron:serve",
             "dev": "npm run electron:serve",
             "postinstall": "electron-builder install-app-deps",
             "postuninstall": "electron-builder install-app-deps"
         },
+        "main": "background.js",
         "dependencies": {
-            "vue": "^2.6.6",
-            "vue-class-component": "^6.0.0",
-            "vue-property-decorator": "^7.0.0",
-            "vue-router": "^3.0.1",
-            "vuetify": "^1.5.5",
+            "@fortawesome/fontawesome-free": "^5.8.2",
+            "core-js": "^2.6.5",
+            "register-service-worker": "^1.6.2",
+            "roboto-fontface": "*",
+            "vue": "^2.6.10",
+            "vue-router": "^3.0.3",
+            "vuetify": "^2.0.0",
             "vuex": "^3.0.1"
         },
         "devDependencies": {
-            "@vue/cli-plugin-babel": "^3.5.0",
-            "@vue/cli-plugin-typescript": "^3.5.0",
-            "@vue/cli-service": "^3.5.0",
-            "electron": "^4.0.0",
+            "@vue/cli-plugin-babel": "^3.9.0",
+            "@vue/cli-plugin-pwa": "^3.9.0",
+            "@vue/cli-service": "^3.9.0",
+            "electron": "^5.0.0",
             "node-sass": "^4.9.0",
+            "sass": "^1.17.4",
             "sass-loader": "^7.1.0",
-            "stylus": "^0.54.5",
-            "stylus-loader": "^3.0.1",
-            "typescript": "^3.2.1",
-            "vue-cli-plugin-electron-builder": "^1.1.3",
-            "vue-cli-plugin-vuetify": "^0.5.0",
-            "vue-template-compiler": "^2.5.21",
-            "vuetify-loader": "^1.0.5"
+            "vue-cli-plugin-electron-builder": "^1.3.6",
+            "vue-cli-plugin-vuetify": "^0.6.1",
+            "vue-template-compiler": "^2.6.10",
+            "vuetify-loader": "^1.2.2"
         },
         "postcss": {
             "plugins": {
@@ -83,16 +81,14 @@ function createPackageJSON(opts) {
         },
         "browserslist": [
             "> 1%",
-            "last 2 versions",
-            "not ie <= 8"
-        ],
-        "main": "background.js"
+            "last 2 versions"
+        ]
     };
 }
 
 // information about that generator
 exports.about = {
-    displayName: 'App (Electron - Vuetify)',
+    displayName: 'App (Electron - Vuetify ^2.0)',
     icon: '🖥',
 };
 
