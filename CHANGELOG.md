@@ -1,5 +1,9 @@
 # Change Log (generator-ego)
 
+## 0.24.0
+
+* removed `html5` generator
+
 ## 0.23.0
 
 * updated `app-electron-vuetify` to [Vuetify 2](https://github.com/vuetifyjs/vuetify/releases/v2.0.0)
