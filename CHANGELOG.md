@@ -1,5 +1,10 @@
 # Change Log (generator-ego)
 
+## 0.25.0
+
+* `app-vue-vuetify` now supports [TypeScript](https://www.typescriptlang.org/), which is default
+* removed `app-electron-mdbootstrap` and `app-vue-mdbootstrap`
+
 ## 0.24.0
 
 * removed `html5` generator

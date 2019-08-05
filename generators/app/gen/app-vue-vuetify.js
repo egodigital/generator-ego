@@ -17,6 +17,50 @@
 const fs = require('fs');
 
 function createPackageJSON(opts) {
+    if (opts.typescript) {
+        return {
+            "name": null,
+            "description": null,
+            "version": "0.0.1",
+            "scripts": {
+                "dev": "vue-cli-service serve",
+                "build": "vue-cli-service build"
+            },
+            "dependencies": {
+                "@fortawesome/fontawesome-free": "^5.8.2",
+                "register-service-worker": "^1.6.2",
+                "roboto-fontface": "*",
+                "vue": "^2.6.10",
+                "vue-class-component": "^7.0.2",
+                "vue-property-decorator": "^8.1.0",
+                "vue-router": "^3.0.3",
+                "vuetify": "^2.0.0",
+                "vuex": "^3.0.1"
+            },
+            "devDependencies": {
+                "@vue/cli-plugin-pwa": "^3.10.0",
+                "@vue/cli-plugin-typescript": "^3.10.0",
+                "@vue/cli-service": "^3.10.0",
+                "node-sass": "^4.9.0",
+                "sass": "^1.17.4",
+                "sass-loader": "^7.1.0",
+                "typescript": "^3.4.3",
+                "vue-cli-plugin-vuetify": "^0.6.1",
+                "vue-template-compiler": "^2.6.10",
+                "vuetify-loader": "^1.2.2"
+            },
+            "postcss": {
+                "plugins": {
+                    "autoprefixer": {}
+                }
+            },
+            "browserslist": [
+                "> 1%",
+                "last 2 versions"
+            ]
+        };
+    }
+
     return {
         "name": null,
         "description": null,
@@ -67,8 +111,6 @@ exports.about = {
  * A generator for Vue based web pages with Vuetify.
  */
 exports.run = async function () {
-    const TEMPLATES_DIR = this.templatePath('app-vue-vuetify-js');
-
     const NAME_AND_TITLE = await this.tools
         .askForNameAndTitle();
     if (!NAME_AND_TITLE) {
@@ -103,6 +145,19 @@ exports.run = async function () {
     const FILES_TO_OPEN_IN_VSCODE = [
     ];
 
+    const LANGUAGE = await this.tools.promptList(
+        'Language:',
+        ['TypeScript', 'JavaScript'],
+        {
+            default: 'TypeScript'
+        }
+    );
+    if (!LANGUAGE) {
+        return;
+    }
+
+    OPTS.typescript = 'TypeScript' === LANGUAGE;
+
     if (INSTALL_VUE_CLI) {
         this.log(`Installing Vue CLI ...`);
         this.spawnCommandSync('npm', ['install', '@vue/cli', '-g'], {
@@ -130,6 +185,9 @@ exports.run = async function () {
             }
         );
     };
+
+    const TEMPLATES_DIR = OPTS.typescript ?
+        this.templatePath('app-vue-vuetify-ts') : this.templatePath('app-vue-vuetify-js');
 
     // copy all files
     this.tools.copy(
