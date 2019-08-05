@@ -36,11 +36,9 @@ from your console.
 | ------------- | ------------- |
 | `api-node-express` | Creates a REST api host based on [express](https://www.npmjs.com/package/express) |
 | `api-php-slim` | Creates a REST api host based on [Slim](https://www.slimframework.com/) |
-| `app-electron-mdbootstrap` | Creates an [Electron](https://github.com/SimulatedGREG/electron-vue) app based on [MD Bootstrap for Vue](https://mdbootstrap.com/docs/vue/) |
 | `app-electron-vuetify` | Creates an [Electron](https://electronjs.org/) app based on [Vuetify 2](https://vuetifyjs.com/) |
 | `app-node-typescript` | Creates a blank [Node.js](https://nodejs.org/) app |
 | `app-reactnative-blank` | Creates a blank [React Native](https://facebook.github.io/react-native/) app |
-| `app-vue-mdbootstrap` | Creates a basic [Vue](https://vuejs.org/) web page with [MD Bootstrap Free](https://mdbootstrap.com/docs/vue/) |
 | `app-vue-vuetify` | Creates a basic [Vue](https://vuejs.org/) web page with [Vuetify 2](https://vuetifyjs.com/) |
 | `tableau-html` | Creates connector files for [Tableau](https://www.tableau.com/) |
 
@@ -84,13 +82,3 @@ Have a look at the `external-generator.example.js` file to get an idea, how to c
 ## Contribute
 
 The [contribution guide](./CONTRIBUTION.md) explains, how to implement a new, build-in generator, work with the code and open a pull request.
-
-## Copyright
-
-### app-electron-mdbootstrap
-
-That template makes use of free version of [MD Bootstrap](https://mdbootstrap.com/vue) and is based on [electron-vue](https://github.com/SimulatedGREG/electron-vue).
-
-### app-vue-mdbootstrap
-
-The template makes use of free version of [MD Bootstrap](https://mdbootstrap.com/vue).

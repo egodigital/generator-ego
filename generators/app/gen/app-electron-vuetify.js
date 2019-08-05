@@ -37,6 +37,58 @@ function createIndexHtml(opts) {
 }
 
 function createPackageJSON(opts) {
+    if (opts.typescript) {
+        return {
+            "name": opts.name,
+            "version": "0.0.1",
+            "description": opts.title,
+            "scripts": {
+                "serve": "vue-cli-service serve",
+                "build": "vue-cli-service build",
+                "electron:build": "vue-cli-service electron:build",
+                "electron:serve": "vue-cli-service electron:serve",
+                "dev": "npm run electron:serve",
+                "postinstall": "electron-builder install-app-deps",
+                "postuninstall": "electron-builder install-app-deps"
+            },
+            "main": "background.js",
+            "dependencies": {
+                "@fortawesome/fontawesome-free": "^5.8.2",
+                "register-service-worker": "^1.6.2",
+                "roboto-fontface": "*",
+                "vue": "^2.6.10",
+                "vue-class-component": "^7.0.2",
+                "vue-property-decorator": "^8.1.0",
+                "vue-router": "^3.0.3",
+                "vuetify": "^2.0.0",
+                "vuex": "^3.0.1"
+            },
+            "devDependencies": {
+                "@vue/cli-plugin-pwa": "^3.10.0",
+                "@vue/cli-plugin-typescript": "^3.10.0",
+                "@vue/cli-service": "^3.10.0",
+                "electron": "^6.0.0",
+                "node-sass": "^4.9.0",
+                "sass": "^1.17.4",
+                "sass-loader": "^7.1.0",
+                "typescript": "^3.4.3",
+                "vue-cli-plugin-electron-builder": "^1.4.0",
+                "vue-cli-plugin-vuetify": "^0.6.1",
+                "vue-template-compiler": "^2.6.10",
+                "vuetify-loader": "^1.2.2"
+            },
+            "postcss": {
+                "plugins": {
+                    "autoprefixer": {}
+                }
+            },
+            "browserslist": [
+                "> 1%",
+                "last 2 versions"
+            ]
+        };
+    }
+
     return {
         "name": opts.name,
         "version": "0.0.1",
@@ -96,8 +148,6 @@ exports.about = {
  * A generator for an Electron app with vuetify.
  */
 exports.run = async function () {
-    const TEMPLATES_DIR = this.templatePath('app-electron-vuetify');
-
     const NAME_AND_TITLE = await this.tools
         .askForNameAndTitle();
     if (!NAME_AND_TITLE) {
@@ -110,6 +160,22 @@ exports.run = async function () {
     };
 
     const OUT_DIR = NAME_AND_TITLE.mkDestinationDir();
+
+    const LANGUAGE = await this.tools.promptList(
+        'Language:',
+        ['TypeScript', 'JavaScript'],
+        {
+            default: 'TypeScript'
+        }
+    );
+    if (!LANGUAGE) {
+        return;
+    }
+
+    OPTS.typescript = 'TypeScript' === LANGUAGE;
+
+    const TEMPLATES_DIR = OPTS.typescript ?
+        this.templatePath('app-electron-vuetify-ts') : this.templatePath('app-electron-vuetify-js');
 
     // copy all files
     this.tools
