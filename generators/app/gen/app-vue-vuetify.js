@@ -67,7 +67,7 @@ exports.about = {
  * A generator for Vue based web pages with Vuetify.
  */
 exports.run = async function () {
-    const TEMPLATES_DIR = this.templatePath('app-vue-vuetify');
+    const TEMPLATES_DIR = this.templatePath('app-vue-vuetify-js');
 
     const NAME_AND_TITLE = await this.tools
         .askForNameAndTitle();
