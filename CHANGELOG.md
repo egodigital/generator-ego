@@ -1,5 +1,9 @@
 # Change Log (generator-ego)
 
+## 0.26.0
+
+* updated `app-vue-vuetify-ts` template
+
 ## 0.25.0
 
 * `app-electron-vuetify` and `app-vue-vuetify` now support [TypeScript](https://www.typescriptlang.org/), which is default
