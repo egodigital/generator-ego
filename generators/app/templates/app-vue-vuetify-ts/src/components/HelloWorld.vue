@@ -2,6 +2,24 @@
   <v-container>
     <v-layout text-center wrap>
       <v-flex xs12>
+        <div class="text-center">
+          <v-menu offset-y>
+            <template v-slot:activator="{ on }">
+              <v-btn color="primary" dark v-on="on">Dropdown</v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in ['item 1', 'item 2', 'item 3']"
+                :key="index"
+                @click
+              >
+                <v-list-item-title>{{ item }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </v-flex>
+      <v-flex xs12>
         <v-img :src="require('../assets/logo.svg')" class="my-3" contain height="200"></v-img>
       </v-flex>
 

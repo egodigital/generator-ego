@@ -1,0 +1,10 @@
+// variables
+
+// custom styling
+.v-list {
+  .v-list-item--link {
+    &:before {
+      color: map-get($primary-one, 'base');
+    }
+  }
+}

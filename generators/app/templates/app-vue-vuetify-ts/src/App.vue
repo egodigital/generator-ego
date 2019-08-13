@@ -1,6 +1,33 @@
 <template>
   <v-app>
-    <v-app-bar app>
+    <v-navigation-drawer app clipped>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="title">Application</v-list-item-title>
+          <v-list-item-subtitle>subtext</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list shaped>
+        <v-list-item
+          v-for="(item, index) in ['nav item 1', 'nav item 2', 'nav item 3']"
+          :key="index"
+          link
+        >
+          <v-list-item-icon>
+            <v-icon>fa-home</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ item }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-app-bar app clipped-left>
       <v-toolbar-title class="headline text-uppercase">
         <a href="https://e-go-digital.com/" target="_blank">
           <img :src="require('./assets/ego-logo.svg')" id="ego-logo" />
@@ -33,13 +60,13 @@ export default Vue.extend({
 });
 </script>
 
-<style lang="scss">
-#ego-logo {
-  height: 32px;
-  margin-top: 12px;
-}
+<style lang="sass">
+#ego-logo 
+  height: 32px
+  margin-top: 12px
 
-a {
-  text-decoration: none;
-}
+
+a 
+  text-decoration: none
+
 </style>

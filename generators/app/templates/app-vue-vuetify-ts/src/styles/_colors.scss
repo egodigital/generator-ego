@@ -1,0 +1,67 @@
+$primary-one: ('base': #009fe3,
+  'lighten-1': #4CBCEB,
+  'lighten-2': #7FCFF1,
+  'lighten-3': #B2E2F7,
+);
+$primary-two: ('base': #000000,
+  'lighten-1': #4C4C4C,
+  'lighten-2': #7F7F7F,
+  'lighten-3': #B2B2B2,
+);
+$secondary-one: ('base': #006298,
+  'lighten-1': #4C91B7,
+  'lighten-2': #7FB0CB,
+  'lighten-3': #B2D0E0,
+);
+$secondary-two: ('base': #00857d,
+  'lighten-1': #4CA9A4,
+  'lighten-2': #7FC2BE,
+);
+$secondary-three: ('base': #e87722,
+  'lighten-1': #EFA064,
+  'lighten-2': #F3BB90,
+);
+$secondary-four: ('base': #eaaa00,
+  'lighten-1': #F0C34C,
+  'lighten-2': #F4D47F,
+);
+$destinction: ('base': #ba0c2f);
+$background-one: ('base': #E5F5FC,
+  'lighten-1': #F2FAFE);
+$background-two: ('base': #E3E3E3,
+  'lighten-1': #EDEDED,
+  'lighten-2': #F6F6F6,
+  'lighten-3': #FAFAFA,
+);
+
+:export {
+  primaryOne: map-get($primary-one, "base");
+  primaryOneLighten1: map-get($primary-one, "lighten-1");
+  primaryOneLighten2: map-get($primary-one, "lighten-2");
+  primaryOneLighten3: map-get($primary-one, "lighten-3");
+  primaryTwo: map-get($primary-two, "base");
+  primaryTwoLighten1: map-get($primary-two, "lighten-1");
+  primaryTwoLighten2: map-get($primary-two, "lighten-2");
+  primaryTwoLighten3: map-get($primary-two, "lighten-3");
+  secondaryOne: map-get($secondary-one, "base");
+  secondaryOneLighten1: map-get($secondary-one, "lighten-1");
+  secondaryOneLighten2: map-get($secondary-one, "lighten-2");
+  secondaryOneLighten3: map-get($secondary-one, "lighten-3");
+  secondaryTwo: map-get($secondary-two, "base");
+  secondaryTwoLighten1: map-get($secondary-two, "lighten-1");
+  secondaryTwoLighten2: map-get($secondary-two, "lighten-2");
+  secondaryThree: map-get($secondary-three, "base");
+  secondaryThreeLighten1: map-get($secondary-three, "lighten-1");
+  secondaryThreeLighten2: map-get($secondary-three, "lighten-2");
+  secondaryFour: map-get($secondary-four, "base");
+  secondaryFourLighten1: map-get($secondary-four, "lighten-1");
+  secondaryFourLighten2: map-get($secondary-four, "lighten-2");
+  destinction: map-get($destinction, "base");
+
+  backgroundOne: map-get($background-one, "base");
+  backgroundOneLighten1: map-get($background-one, "lighten-1");
+  backgroundTwo: map-get($background-two, "base");
+  backgroundTwoLighten1: map-get($background-two, "lighten-1");
+  backgroundTwoLighten2: map-get($background-two, "lighten-2");
+  backgroundTwoLighten3: map-get($background-two, "lighten-3");
+}
