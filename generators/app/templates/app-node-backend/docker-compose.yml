@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:5.0-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - 6379:6379
+    restart: always
+  mongo:
+    image: mongo:3.6
+    depends_on:
+      - redis
+    ports:
+      - 27017:27017
+    restart: always
+    volumes:
+      - /data/db
+  backend:
+    # command: sh -c "apk add git && npm install && npm audit fix && npm run dev & cd webapp && npm install && npm run dev"
+    # @TODO: implement web app
+    command: sh -c "apk add git && npm install && npm audit fix && npm run dev"
+    depends_on:
+      - mongo
+    env_file: .env
+    image: node:dubnium-alpine
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
