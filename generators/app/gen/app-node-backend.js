@@ -193,7 +193,8 @@ exports.run = async function () {
     // README.md
     this.tools.copyREADME(
         TEMPLATES_DIR, OUT_DIR, {
-            title: NAME,
+            'name_internal': NAME_INTERNAL,
+            'title': NAME,
         }
     );
 
