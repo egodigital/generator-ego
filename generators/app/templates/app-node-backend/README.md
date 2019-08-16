@@ -13,6 +13,92 @@ npm run dev
 npm run build
 ```
 
+## Database
+
+The backend uses [TypeORM](https://typeorm.io/) to handle database connections, entities and their data.
+
+### Entities
+
+To create an entity class, lets say `User`, create a `/src/entities/User.ts` file and start with the following skeleton:
+
+```typescript
+import { Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
+
+/**
+ * An user object.
+ */
+@Entity()
+export class User {
+    /**
+     * The ID.
+     */
+    @ObjectIdColumn()
+    id: ObjectID;
+
+    /**
+     * The email address.
+     */
+    @Column()
+    email: string;
+}
+```
+
+To learn more about entities, read the [Entities chapter](https://typeorm.io/#/entities) @ TypeORM.
+
+## Swagger
+
+### Definition files
+
+[Swagger definitions](https://swagger.io/docs/specification/2-0/basic-structure/) are stored inside the `/src/swagger/definitions` folder as JSON files.
+
+If you want to add a new definition, lets say `MyResult`, create a `MyResult.json` file there and fill it with an object, that represents the definition, e.g:
+
+```json
+{
+    "type": "object",
+    "properties": {
+        "data": {
+            "description": "Data, that describes the result."
+        },
+        "success": {
+            "type": "boolean",
+            "description": "Indicates if operation was successful or not.",
+            "example": true
+        }
+    }
+}
+```
+
+Now you can use the [@Swagger decorator](https://github.com/egodigital/express-controllers-samples/tree/master/swagger), to use the definition in your endpoints:
+
+```typescript
+import { Request, Response } from 'express';
+import { ControllerBase, GET, Swagger } from '@egodigital/express-controllers';
+
+
+export class Controller extends ControllerBase {
+    @GET()
+    // s. https://swagger.io/docs/specification/2-0/paths-and-operations/
+    @Swagger({
+        "summary": "An endpoint with 'MyResult'.",
+        "responses": {
+            "200": {
+                "description": "Operation was successful.",
+                "schema": {
+                    "$ref": "#/definitions/MyResult",
+                }
+            },
+        }
+    })
+    public async index(req: Request, res: Response) {
+        return res.json({
+            success: true,
+            data: 'Swagger test: OK',
+        });
+    }
+}
+```
+
 ## Docker
 
 ### Build image
@@ -20,7 +106,7 @@ npm run build
 Run the following command from root folder:
 
 ```
-docker build -t "<%= name_internal %>" .
+docker build -t <%= name_internal %> .
 ```
 
 ### docker-compose
