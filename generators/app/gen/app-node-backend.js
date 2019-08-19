@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const sanitizeFilename = require('sanitize-filename');
+const fs = require('fs');
 
-function createPackageJson() {
+function createPackageJson(opts) {
     return {
         "name": null,
         "version": "0.0.1",
@@ -72,6 +72,46 @@ function createPackageJson() {
     };
 }
 
+function createWebAppPackageJson(opts) {
+    return {
+        "name": null,
+        "description": null,
+        "version": "0.0.1",
+        "scripts": {
+            "dev": "vue-cli-service serve --port 3000",
+            "build": "vue-cli-service build"
+        },
+        "dependencies": {
+            "@fortawesome/fontawesome-free": "^5.8.2",
+            "core-js": "^2.6.5",
+            "roboto-fontface": "*",
+            "vue": "^2.6.10",
+            "vue-router": "^3.0.3",
+            "vuetify": "^2.0.0",
+            "vuex": "^3.0.1"
+        },
+        "devDependencies": {
+            "@vue/cli-plugin-babel": "^3.9.0",
+            "@vue/cli-service": "^3.9.0",
+            "node-sass": "^4.9.0",
+            "sass": "^1.17.4",
+            "sass-loader": "^7.1.0",
+            "vue-cli-plugin-vuetify": "^0.6.1",
+            "vue-template-compiler": "^2.6.10",
+            "vuetify-loader": "^1.2.2"
+        },
+        "postcss": {
+            "plugins": {
+                "autoprefixer": {}
+            }
+        },
+        "browserslist": [
+            "> 1%",
+            "last 2 versions"
+        ]
+    };
+}
+
 // information about that generator
 exports.about = {
     displayName: 'Backend (Node - MVC)',
@@ -82,23 +122,20 @@ exports.about = {
  * A generator for Express MVC apps with an API and a web app.
  */
 exports.run = async function () {
-    const TEMPLATES_DIR = this.templatePath('api-node-express');
+    const TEMPLATES_DIR = this.templatePath('app-node-backend');
+    const TEMPLATES_DIR_WEBAPP = TEMPLATES_DIR + '/webapp';
 
-    const NAME = this.tools.toStringSafe(
-        await this.tools.promptString(
-            `Enter the NAME of your project:`, {
-                validator: true,
-            }
-        )
-    ).trim();
-    if ('' === NAME) {
+    const NAME_AND_TITLE = await this.tools
+        .askForNameAndTitle();
+    if (!NAME_AND_TITLE) {
         return;
     }
 
+    const NAME = NAME_AND_TITLE.name;
     const NAME_LOWER = NAME.toLowerCase();
     const NAME_INTERNAL = NAME_LOWER.split(' ')
         .join('-');
-    const FILE_NAME = sanitizeFilename(NAME_LOWER);
+    const TITLE = NAME_AND_TITLE.title;
 
     const DESCRIPTION = this.tools.toStringSafe(
         await this.tools.promptString(
@@ -108,9 +145,16 @@ exports.run = async function () {
         )
     ).trim();
 
+    const INSTALL_VUE_CLI = await this.tools.confirm(
+        `Install Vue CLI?`, {
+            default: false,
+        }
+    );
+
     // create output directory
     const OUT_DIR = this.tools
         .mkDestinationDir(NAME_LOWER);
+    const OUT_DIR_WEBAPP = OUT_DIR + '/webapp';
 
     const OPTS = {
         description: DESCRIPTION,
@@ -118,6 +162,13 @@ exports.run = async function () {
     };
 
     const FILES_TO_OPEN_IN_VSCODE = [];
+
+    if (INSTALL_VUE_CLI) {
+        this.log(`Installing Vue CLI ...`);
+        this.spawnCommandSync('npm', ['install', '@vue/cli', '-g'], {
+            'cwd': OUT_DIR
+        });
+    }
 
     const GENERATE_FILE = (file, func) => {
         return this.tools.withSpinner(
@@ -140,10 +191,18 @@ exports.run = async function () {
         );
     };
 
+    // copy all files
+    this.tools.copy(
+        TEMPLATES_DIR,
+        OUT_DIR,
+        ['**'],
+    );
+
+    // package.json (backend)
     await GENERATE_FILE('package.json', () => {
         const PACKAGE_JSON = createPackageJson(OPTS);
 
-        PACKAGE_JSON.name = NAME_INTERNAL;
+        PACKAGE_JSON.name = NAME_INTERNAL + '-backend';
         PACKAGE_JSON.description = DESCRIPTION;
 
         PACKAGE_JSON.dependencies = this.tools
@@ -157,6 +216,40 @@ exports.run = async function () {
             'utf8'
         );
     });
+    // package.json (web app)
+    await GENERATE_FILE('webapp/package.json', () => {
+        const PACKAGE_JSON = createWebAppPackageJson(OPTS);
+
+        PACKAGE_JSON.name = NAME_INTERNAL + '-webapp';
+        PACKAGE_JSON.description = DESCRIPTION;
+
+        PACKAGE_JSON.dependencies = this.tools
+            .sortObjectByKey(PACKAGE_JSON.dependencies);
+        PACKAGE_JSON.devDependencies = this.tools
+            .sortObjectByKey(PACKAGE_JSON.devDependencies);
+
+        fs.writeFileSync(
+            OUT_DIR_WEBAPP + '/package.json',
+            JSON.stringify(PACKAGE_JSON, null, 4),
+            'utf8'
+        );
+    });
+    await GENERATE_FILE('webapp/public/index.html', () => {
+        const INDEX_HTML_SRC = TEMPLATES_DIR_WEBAPP + '/public/index.html';
+        const INDEX_HTML_DEST = OUT_DIR_WEBAPP + '/public/index.html';
+
+        const NEW_CONTENT = fs.readFileSync(
+            INDEX_HTML_SRC,
+            'utf8'
+        ).split('{{ EGO-PAGE-TITLE }}')
+            .join(this.tools.encodeHtml(TITLE));
+
+        fs.writeFileSync(
+            INDEX_HTML_DEST,
+            NEW_CONTENT,
+            'utf8'
+        );
+    });
 
     // .gitignore
     this.tools.createGitIgnore(OUT_DIR, [
@@ -164,6 +257,23 @@ exports.run = async function () {
         'node_modules/',
         'dist/',
         'doc/',
+    ]);
+    // .gitignore (web app)
+    this.tools.createGitIgnore(OUT_DIR_WEBAPP, [
+        '.DS_Store',
+        'node_modules',
+        '/dist',
+        '.env.local',
+        '.env.*.local',
+        'npm-debug.log*',
+        'yarn-debug.log*',
+        'yarn-error.log*',
+        '.idea',
+        '*.suo',
+        '*.ntvs*',
+        '*.njsproj',
+        '*.sln',
+        '*.sw*',
     ]);
 
     // .env
@@ -200,7 +310,7 @@ exports.run = async function () {
 
     // npm install
     this.tools.runNPMInstall(OUT_DIR);
-    // @TODO: 'npm install' for web app
+    this.tools.runNPMInstall(OUT_DIR_WEBAPP);
 
     await this.tools
         .askForGitInit(OUT_DIR);

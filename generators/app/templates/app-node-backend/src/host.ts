@@ -1,3 +1,5 @@
+import * as egoose from '@egodigital/egoose';
+import * as express from 'express';
 import * as expressControllers from '@egodigital/express-controllers';
 import * as path from 'path';
 import * as swagger from './swagger';
@@ -23,4 +25,29 @@ export async function initHost(app: AppContext) {
         files: '**/*' + SCRIPT_EXT,
         swagger: swagger.createSwaggerOptions(app),
     });
+
+    // this has be done at last!!!
+    setupWebApp(app);
+}
+
+function setupWebApp(app: AppContext) {
+    const ROUTER = express.Router();
+
+    // implement middlewares for the web app here
+    // ROUTER.use();
+
+    if (!egoose.IS_LOCAL_DEV) {
+        ROUTER.use(
+            express.static(
+                path.join(__dirname, '../webapp/dist'),
+                {
+                    etag: false,
+                    maxAge: 0,
+                }
+            )
+        );
+    }
+
+    app.host
+        .use('/', ROUTER);
 }

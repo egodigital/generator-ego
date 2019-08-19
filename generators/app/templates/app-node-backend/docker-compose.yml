@@ -17,16 +17,14 @@ services:
     volumes:
       - /data/db
   backend:
-    # command: sh -c "apk add git && npm install && npm audit fix && npm run dev & cd webapp && npm install && npm run dev"
-    # @TODO: implement web app
-    command: sh -c "apk add git && npm install && npm audit fix && npm run dev"
+    command: sh -c "apk add git && npm install && npm audit fix && npm run dev & cd webapp && npm install && npm rebuild node-sass && npm run dev"
     depends_on:
       - mongo
     env_file: .env
     image: node:dubnium-alpine
     ports:
       - "80:80"
-      - "8080:8080"
+      - "3000:3000"
     volumes:
       - .:/usr/src/app
     working_dir: /usr/src/app

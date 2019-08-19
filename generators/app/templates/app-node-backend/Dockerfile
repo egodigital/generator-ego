@@ -41,9 +41,8 @@ COPY . .
 
 # build the server
 RUN npm run build
-# build the webapp
-# @TODO: implement web app
-# RUN cd webapp && npm install && npm audit fix && npm rebuild node-sass && npm run build && cd ..
+# build the web app
+RUN cd webapp && npm install && npm audit fix && npm rebuild node-sass && npm run build && cd ..
 
 # expose ports
 EXPOSE 2222 80
