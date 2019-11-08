@@ -1,5 +1,16 @@
 # Change Log (generator-ego)
 
+## 0.27.0
+
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [@egodigital/egoose](https://www.npmjs.com/package/@egodigital/egoose) `^7.0.0`
+  * [ejs](https://www.npmjs.com/package/ejs) `^2.7.1`
+  * [fs-extra](https://www.npmjs.com/package/fs-extra) `^8.1.0`
+  * [opn](https://www.npmjs.com/package/opn) `^6.0.0`
+  * [ora](https://www.npmjs.com/package/ora) `^4.0.2`
+  * [sanitize-filename](https://www.npmjs.com/package/sanitize-filename) `^1.6.3`
+  * [yeoman-generator](https://www.npmjs.com/package/yeoman-generator) `^4.2.0`
+
 ## 0.26.0
 
 * updated `app-vue-vuetify-ts` template
