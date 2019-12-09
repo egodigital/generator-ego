@@ -1,5 +1,11 @@
 # Change Log (generator-ego)
 
+## 0.28.0
+
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [ejs](https://www.npmjs.com/package/ejs) `^2.7.4`
+  * [ora](https://www.npmjs.com/package/ora) `^4.0.3`
+
 ## 0.27.0
 
 * updated the following [npm](https://www.npmjs.com/) modules:
