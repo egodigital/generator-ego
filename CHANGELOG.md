@@ -1,5 +1,13 @@
 # Change Log (generator-ego)
 
+## 0.29.0
+
+* updated the following [npm](https://www.npmjs.com/) modules:
+  * [chalk](https://www.npmjs.com/package/chalk) `^3.0.0`
+  * [ejs](https://www.npmjs.com/package/ejs) `^3.0.1`
+  * [got](https://www.npmjs.com/package/got) `^10.2.2`
+  * [yeoman-generator](https://www.npmjs.com/package/yeoman-generator) `^4.4.0`
+
 ## 0.28.0
 
 * updated the following [npm](https://www.npmjs.com/) modules:
