@@ -1,3 +1,5 @@
 **/*.map
 node_modules
 .gitignore
+/.github
+/.vscode
