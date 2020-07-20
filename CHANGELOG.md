@@ -1,6 +1,10 @@
 # Change Log (generator-ego)
 
-## 0.29.0
+## 0.30.0
+
+* npm update
+
+## 0.29.1
 
 * updated the following [npm](https://www.npmjs.com/) modules:
   * [chalk](https://www.npmjs.com/package/chalk) `^3.0.0`
