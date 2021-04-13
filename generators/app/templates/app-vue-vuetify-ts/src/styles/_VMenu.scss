@@ -1,8 +1,0 @@
-// variables
-$menu-border-radius: 8px;
-
-// custom styling
-.v-menu__content {
-  border-radius: $menu-border-radius;
-  @include elevation(4);
-}

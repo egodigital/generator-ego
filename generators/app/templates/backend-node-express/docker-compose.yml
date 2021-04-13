@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:5-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - 6379:6379
+    restart: always
+
+  postgres:
+    image: postgres:11
+    restart: always
+    environment:
+      - POSTGRES_DB=backend_dev
+      - POSTGRES_USER=backend
+      - POSTGRES_PASSWORD=backend
+    ports:
+      - 5432:5432
+
+  mongo:
+    image: mongo:3.6
+    ports:
+      - 27017:27017
+    restart: always
+    volumes:
+      - /data/db
+
+  backend:
+    depends_on:
+      - redis
+      - postgres
+      - mongo
+    command: sh -c "apk add git && cd ./backend && npm install && npm run dev & cd ./frontend && npm install && npm rebuild node-sass && npm start"
+    env_file: ./backend/.env
+    image: node:14-alpine
+    ports:
+      - 80:80
+      - 8080:8080
+      - 9229:9229
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
