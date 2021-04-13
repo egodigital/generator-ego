@@ -34,13 +34,7 @@ from your console.
 
 | Name  | Description |
 | ------------- | ------------- |
-| `api-node-express` | Creates a REST api host based on [express](https://www.npmjs.com/package/express) |
-| `api-php-slim` | Creates a REST api host based on [Slim](https://www.slimframework.com/) |
-| `app-electron-vuetify` | Creates an [Electron](https://electronjs.org/) app based on [Vuetify 2](https://vuetifyjs.com/) |
-| `app-node-typescript` | Creates a blank [Node.js](https://nodejs.org/) app |
-| `app-reactnative-blank` | Creates a blank [React Native](https://facebook.github.io/react-native/) app |
-| `app-vue-vuetify` | Creates a basic [Vue](https://vuejs.org/) web page with [Vuetify 2](https://vuetifyjs.com/) |
-| `tableau-html` | Creates connector files for [Tableau](https://www.tableau.com/) |
+| `backend-node-express` | Creates a backend with a React frontend and database support. |
 
 ## Additional generators
 
