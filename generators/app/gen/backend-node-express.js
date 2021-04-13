@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const sanitizeFilename = require('sanitize-filename');
+
 // information about that generator
 exports.about = {
     displayName: 'Backend (Node - Express & React)',
@@ -46,7 +48,9 @@ exports.run = async function () {
     const filesToOpenInVSCode = [];
 
     await this.tools.withSpinner('Copying files', async (spinner) => {
-        this.fs.copy(templateDir,outDir);
+        const filesToExclude = [];
+
+        this.tools.copy(templateDir, outDir, null, filesToExclude);
     });
 
     await this.tools
