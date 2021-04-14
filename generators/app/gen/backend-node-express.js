@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const Enumerable = require('node-enumerable');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const path = require('path');
@@ -26,6 +27,7 @@ exports.about = {
     icon: '🛠',
 };
 
+const optionFrontend = 'Frontend';
 const optionMongo = 'Mongo';
 const optionRedis = 'Redis';
 const optionTypeORM = 'TypeORM';
@@ -49,6 +51,9 @@ exports.run = async function () {
     const selectedFeatures = await this.tools.promptMultiSelect(
         'What features do you like to use?',
         [{
+            name: optionFrontend,
+            checked: true
+        }, {
             name: optionMongo,
             checked: false
         }, {
@@ -61,6 +66,7 @@ exports.run = async function () {
     );
 
     const options = {
+        frontend: selectedFeatures.includes(optionFrontend),
         mongo: selectedFeatures.includes(optionMongo),
         name: sanitizeFilename(projectName.toLowerCase()),
         redis: selectedFeatures.includes(optionRedis),
@@ -173,6 +179,9 @@ exports.run = async function () {
     await this.tools.withSpinner('Update docker-compose.yml', async (spinner) => {
         await editYAML('docker-compose.yml', (dockerCompose) => {
             const backendDependsOn = [];
+            const backendCommands = [
+                'apk add git && cd ./backend && npm install && npm run dev'
+            ];
 
             if (options.redis) {
                 backendDependsOn.push('redis');
@@ -191,6 +200,14 @@ exports.run = async function () {
             } else {
                 delete dockerCompose.services.postgres;
             }
+
+            if (options.frontend) {
+                backendCommands.push(
+                    'cd ./frontend && npm install && npm rebuild node-sass && npm start'
+                );
+            }
+
+            dockerCompose.services.backend.command = `sh -c "${backendCommands.join(' & ')}"`;
 
             if (backendDependsOn.length) {
                 dockerCompose.services.backend.depends_on = backendDependsOn;
@@ -235,6 +252,10 @@ exports.run = async function () {
             await deleteFile('backend/src/database/mongo.ts');
         }
 
+        if (!options.frontend) {
+            await deleteFolder('frontend');
+        }
+
         const databaseIndexExports = [];
         if (options.mongo) {
             databaseIndexExports.push("export * from './mongo';");
@@ -259,6 +280,12 @@ exports.run = async function () {
                 }
 
                 return l;
+            }).filter(l => {
+                if (l.trim().startsWith('RUN cd frontend ')) {
+                    return options.frontend;
+                }
+
+                return true;
             });
 
             return lines.join('\n');
@@ -286,20 +313,84 @@ exports.run = async function () {
                         }
                     }
 
+                    if (!options.frontend) {
+                        if (l.trim().startsWith('PORT')) {
+                            return false;
+                        }
+                    }
+
                     return true;
                 }
 
                 return false;
             }).join('\n');
         });
+
+        // update backend/src/host/index.ts
+        await editFile('backend/src/host/index.ts', async (hostIndex) => {
+            const getLineGenerator = function*() {
+                const lineArr = hostIndex.split('\n');
+
+                for (let i = 0; i < lineArr.length; i++) {
+                    yield lineArr[i];
+                }
+            };
+
+            let lines = Enumerable.from(getLineGenerator())
+                .toArray();
+
+            const tagIds = [
+                '79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2',
+                'b88a2f2f-75ea-43f5-8b20-55cda9f4b932'
+            ];
+
+            for (const tid of tagIds) {
+                const newLines = [];
+
+                const tagStart = `<frontend-${tid}>`;
+                const tagEnd = `</frontend-${tid}>`;
+
+                let mode = 0;
+                for (let i = 0; i < lines.length; i++) {
+                    let l = lines[i];
+
+                    let addLine = true;
+
+                    if (mode === 0) {
+                        addLine = true;
+
+                        if (l.trim().endsWith(tagStart)) {
+                            addLine = true;
+                            l = '';
+                            mode = 1;
+                        }
+                    } else if (mode === 1) {
+                        addLine = options.frontend;
+
+                        if (l.trim().endsWith(tagEnd)) {
+                            addLine = false;
+                            mode = 2;
+                        }
+                    }
+
+                    if (addLine) {
+                        newLines.push(l);
+                    }
+                }
+
+                lines = newLines;
+            }
+
+            return lines.join('\n');
+        });
     });
 
     // README.md
     this.tools.copyREADME(
         templateDir, outDir, {
-            name_internal: options.name,
-            title: projectName,
-        }
+        name_internal: options.name,
+        title: projectName,
+    }
     );
 
     // npm install
@@ -307,8 +398,13 @@ exports.run = async function () {
         const nodeDirs = [
             outDir,
             path.join(outDir, 'backend'),
-            path.join(outDir, 'frontend')
         ];
+
+        if (options.frontend) {
+            nodeDirs.push(
+                path.join(outDir, 'frontend')
+            );
+        }
 
         for (const dir of nodeDirs) {
             this.tools.runNPMInstall(dir);

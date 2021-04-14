@@ -1,10 +1,10 @@
+import * as constants from '../constants';
 import cors from 'cors';
 import express from 'express';
 import nocache from 'nocache';
 import path from 'path';
 import { initControllers } from '@egodigital/express-controllers';
 import { IApp } from '../app';
-import { IS_LOCAL_DEV, SCRIPT_EXT } from '../constants';
 import { createSwaggerOptions } from './swagger';
 
 /**
@@ -30,7 +30,7 @@ export async function initHost(app: IApp) {
     initControllers({
         app: app.host,
         cwd: __dirname + '/../controllers',
-        files: ['**/*' + SCRIPT_EXT],
+        files: ['**/*' + constants.SCRIPT_EXT],
         controllerConstructorArgs: function () {
             arguments[0] = app;  // update __app argument (1st)
 
@@ -38,13 +38,14 @@ export async function initHost(app: IApp) {
         },
         swagger: await createSwaggerOptions(app)
     });
-
+/// <frontend-79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2>
     // this all has be done at last!!!
     setupWebApp(app);
+/// </frontend-79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2>
 }
-
+/// <frontend-b88a2f2f-75ea-43f5-8b20-55cda9f4b932>
 function setupWebApp(app: IApp) {
-    if (IS_LOCAL_DEV) {
+    if (constants.IS_LOCAL_DEV) {
         return;
     }
 
@@ -64,3 +65,4 @@ function setupWebApp(app: IApp) {
 
     host.use('/', ROUTER);
 }
+/// </frontend-b88a2f2f-75ea-43f5-8b20-55cda9f4b932>

@@ -1,5 +1,9 @@
 # Change Log (generator-ego)
 
+## 0.33.0
+
+* Redis and frontend features can be selected or deselected now
+
 ## 0.32.0
 
 * re-add `npm install`s in `backend-node-express` generator

@@ -35,9 +35,8 @@ COPY package*.json ./
 # bundle app source
 COPY . .
 
-# build the server
+# build app
 RUN cd backend && npm install && npm run build && cd ..
-# build the frontend
 RUN cd frontend && npm install && npm rebuild node-sass && npm run build && cd ..
 
 # expose ports
