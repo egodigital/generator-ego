@@ -1,6 +1,5 @@
 /* eslint-disable require-await */
 import { GET, POST, schema, Swagger } from '@egodigital/express-controllers';
-import { withDB, withMongo } from '../../../database';
 import { ApiV1ControllerBase, ApiV1Request, ApiV1Response } from './_share';
 
 interface IPost {
@@ -30,28 +29,8 @@ export class Controller extends ApiV1ControllerBase {
         }
     })
     public async getTest(req: ApiV1Request, resp: ApiV1Response) {
-        let isMongoConnectionWorking: boolean;
-        try {
-            await withMongo(async () => { });
-
-            isMongoConnectionWorking = true;
-        } catch {
-            isMongoConnectionWorking = false;
-        }
-
-        let isSqlConnectionWorking: boolean;
-        try {
-            await withDB(async () => { });
-
-            isSqlConnectionWorking = true;
-        } catch {
-            isSqlConnectionWorking = false;
-        }
-
         // s. ApiV1ControllerBase.__serialize()
         return {
-            isMongoConnectionWorking,
-            isSqlConnectionWorking,
             message: 'Hello, e.GO!'
         };
     }

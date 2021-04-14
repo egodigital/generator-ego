@@ -17,16 +17,6 @@
                 "message"
             ],
             "properties": {
-                "isMongoConnectionWorking": {
-                    "description": "Indicates if Mongo connection works or not.",
-                    "type": "boolean",
-                    "example": true
-                },
-                "isSqlConnectionWorking": {
-                    "description": "Indicates if SQL connection works or not.",
-                    "type": "boolean",
-                    "example": true
-                },
                 "message": {
                     "description": "The message.",
                     "type": "string",
