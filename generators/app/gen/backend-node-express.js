@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const Enumerable = require('node-enumerable');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const path = require('path');
@@ -328,22 +327,15 @@ exports.run = async function () {
 
         // update backend/src/host/index.ts
         await editFile('backend/src/host/index.ts', async (hostIndex) => {
-            const getLineGenerator = function*() {
-                const lineArr = hostIndex.split('\n');
+            let lines = hostIndex.split('\n');
 
-                for (let i = 0; i < lineArr.length; i++) {
-                    yield lineArr[i];
-                }
-            };
-
-            let lines = Enumerable.from(getLineGenerator())
-                .toArray();
-
+            // remove or keep lines, surrounded by
+            // <frontend-tagid></frontend-tagid>
+            // and based on options.frontend flag
             const tagIds = [
                 '79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2',
                 'b88a2f2f-75ea-43f5-8b20-55cda9f4b932'
             ];
-
             for (const tid of tagIds) {
                 const newLines = [];
 
@@ -354,23 +346,27 @@ exports.run = async function () {
                 for (let i = 0; i < lines.length; i++) {
                     let l = lines[i];
 
-                    let addLine = true;
+                    let addLine;
 
                     if (mode === 0) {
+                        // we are before tagStart
                         addLine = true;
 
                         if (l.trim().endsWith(tagStart)) {
-                            addLine = true;
-                            l = '';
+                            addLine = false;
                             mode = 1;
                         }
                     } else if (mode === 1) {
+                        // we are between tagStart and tagEnd
+
                         addLine = options.frontend;
 
                         if (l.trim().endsWith(tagEnd)) {
                             addLine = false;
-                            mode = 2;
+                            mode = 2;  // add the rest
                         }
+                    } else {
+                        addLine = true;
                     }
 
                     if (addLine) {

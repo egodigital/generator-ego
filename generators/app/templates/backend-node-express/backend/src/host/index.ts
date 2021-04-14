@@ -38,12 +38,14 @@ export async function initHost(app: IApp) {
         },
         swagger: await createSwaggerOptions(app)
     });
-/// <frontend-79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2>
+    /// <frontend-79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2>
+
     // this all has be done at last!!!
     setupWebApp(app);
-/// </frontend-79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2>
+    /// </frontend-79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2>
 }
 /// <frontend-b88a2f2f-75ea-43f5-8b20-55cda9f4b932>
+
 function setupWebApp(app: IApp) {
     if (constants.IS_LOCAL_DEV) {
         return;
