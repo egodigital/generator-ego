@@ -18,6 +18,7 @@ const fs = require('fs');
 const fsExtra = require('fs-extra');
 const path = require('path');
 const sanitizeFilename = require('sanitize-filename');
+const yaml = require('js-yaml');
 
 // information about that generator
 exports.about = {
@@ -38,8 +39,7 @@ exports.run = async function () {
         await this.tools.promptString(
             `Enter the NAME of your project:`, {
             validator: true,
-        }
-        )
+        })
     ).trim();
     if (!projectName.length) {
         return;
@@ -80,11 +80,11 @@ exports.run = async function () {
 
     const editFile = async (relPath, action) => {
         const file = path.join(outDir, relPath);
-    
+
         const newText = await action(
             await fs.promises.readFile(file, 'utf8')
         );
-    
+
         await fs.promises.writeFile(file, newText, 'utf8');
     };
 
@@ -94,10 +94,22 @@ exports.run = async function () {
         const obj = JSON.parse(
             await fs.promises.readFile(file, 'utf8')
         );
-    
+
         await action(obj);
-    
+
         await fs.promises.writeFile(file, JSON.stringify(obj, null, 4), 'utf8');
+    };
+
+    const editYAML = async (relPath, action) => {
+        const file = path.join(outDir, relPath);
+
+        const obj = yaml.load(
+            await fs.promises.readFile(file, 'utf8')
+        );
+
+        await action(obj);
+
+        await fs.promises.writeFile(file, yaml.dump(obj, null, 4), 'utf8');
     };
 
     const filesToOpenInVSCode = [];
@@ -118,15 +130,22 @@ exports.run = async function () {
             'backend/package.json': async (packageJSON) => {
                 packageJSON.name = `${options.name}-backend`;
 
-                if (!options.typeORM) {
+                if (options.typeORM) {
+                    packageJSON.scripts['dev'] = "ts-node ./node_modules/typeorm/cli.js migration:run && nodemon --watch 'src/**/*.ts' --watch 'src/res/**/*' --ignore 'src/**/*.spec.ts' --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts";
+                } else {
+                    packageJSON.scripts['dev'] = "nodemon --watch 'src/**/*.ts' --watch 'src/res/**/*' --ignore 'src/**/*.spec.ts' --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts";
+
                     delete packageJSON.dependencies['typeorm'];
                     delete packageJSON.dependencies['pq'];
+
                     delete packageJSON.devDependencies['@types/pg'];
+
                     delete packageJSON.scripts['migration:create'];
                 }
+
                 if (!options.mongo) {
                     delete packageJSON.dependencies['mongoose'];
-                    delete packageJSON.dependencies['@types/mongoose'];
+                    delete packageJSON.devDependencies['@types/mongoose'];
                 }
             },
             'frontend/package.json': async (packageJSON) => {
@@ -137,6 +156,31 @@ exports.run = async function () {
         for (const file in packageJSONFiles) {
             await editJSON(file, packageJSONFiles[file]);
         }
+    });
+
+    // update docker-compose.yml
+    await this.tools.withSpinner('Update docker-compose.yml', async (spinner) => {
+        await editYAML('docker-compose.yml', (dockerCompose) => {
+            const backendDependsOn = [];
+
+            if (options.mongo) {
+                backendDependsOn.push('mongo');
+            } else {
+                delete dockerCompose.services.mongo;
+            }
+
+            if (options.typeORM) {
+                backendDependsOn.push('postgres');
+            } else {
+                delete dockerCompose.services.postgres;
+            }
+
+            if (backendDependsOn.length) {
+                dockerCompose.services.backend.depends_on = backendDependsOn;
+            } else {
+                delete dockerCompose.services.backend.depends_on;
+            }
+        });
     });
 
     await this.tools.withSpinner('Cleanups', async (spinner) => {
@@ -168,6 +212,14 @@ exports.run = async function () {
             await deleteFolder('backend/src/database');
         }
     });
+
+    // README.md
+    this.tools.copyREADME(
+        templateDir, outDir, {
+            name_internal: options.name,
+            title: projectName,
+        }
+    );
 
     // npm install
     await this.tools.withSpinner(`Run 'npm install'`, async (spinner) => {
