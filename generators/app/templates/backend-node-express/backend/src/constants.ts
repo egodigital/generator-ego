@@ -28,12 +28,3 @@ export const IS_PROD = NODE_ENV === 'production';
  * Is local development or not.
  */
 export const IS_LOCAL_DEV = process.env.LOCAL_DEVELOPMENT?.toLowerCase().trim() === '1';
-
-/**
- * Redis host address.
- */
-export const REDIS_HOST = process.env.REDIS_HOST?.trim() || 'localhost';
-/**
-  * Redis TCP port.
-  */
-export const REDIS_PORT = parseInt(process.env.REDIS_PORT?.trim() || '6379');
