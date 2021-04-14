@@ -30,9 +30,9 @@ export async function createSwaggerOptions(
             host: 'localhost:8080',
             info: {
                 contact: {
-                    email: 'developer@e-go-digital.com'
+                    email: 'hello@e-go-digital.com'
                 },
-                description: 'Describes all CarThing endpoints.',
+                description: 'Describes all backend endpoints.',
                 title: 'Backend',
                 version: app.package.version
             },
