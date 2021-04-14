@@ -1,5 +1,12 @@
 # Change Log (generator-ego)
 
+## 0.30.0
+
+* removed all obsolete generators
+* add new `backend-node-express` generator
+* npm update
+* generator requires at least [Node 12](https://nodejs.org/en/blog/release/v12.0.0/) now
+
 ## 0.29.0
 
 * updated the following [npm](https://www.npmjs.com/) modules:

@@ -1,61 +1,64 @@
 {
-  "name": "generator-ego",
-  "version": "0.30.0",
-  "private": false,
-  "description": "A Yeoman generator with useful general sub generators and the possibility to expand it by JavaScript.",
-  "files": [
-    "generators"
-  ],
-  "scripts": {
-    "deploy": "npm install && npm publish"
-  },
-  "keywords": [
-    "yeoman-generator",
-    "ego",
-    "digital",
-    "gmbh",
-    "apis",
-    "rest",
-    "node",
-    "express",
-    "web",
-    "apps",
-    "electron",
-    "vue",
-    "html5",
-    "typescript",
-    "docker",
-    "ecmascript",
-    "javascript",
-    "vuetify",
-    "electron",
-    "react-native"
-  ],
-  "author": "e.GO Digital GmbH, Aachen, Germany",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/egodigital/generator-ego/issues"
-  },
-  "homepage": "https://github.com/egodigital/generator-ego#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/egodigital/generator-ego.git"
-  },
-  "dependencies": {
-    "@egodigital/egoose": "^8.5.0",
-    "chalk": "^4.1.0",
-    "ejs": "^3.1.6",
-    "fs-extra": "^9.1.0",
-    "got": "^11.8.2",
-    "html-entities": "^2.3.2",
-    "minimatch": "^3.0.4",
-    "moment": "^2.29.1",
-    "node-zip": "^1.1.1",
-    "opn": "^6.0.0",
-    "ora": "^5.4.0",
-    "sanitize-filename": "^1.6.3",
-    "signale": "^1.4.0",
-    "xml-js": "^1.6.11",
-    "yeoman-generator": "^4.13.0"
-  }
+    "name": "generator-ego",
+    "version": "0.30.0",
+    "private": false,
+    "description": "A Yeoman generator with useful general sub generators and the possibility to expand it by JavaScript.",
+    "files": [
+        "generators"
+    ],
+    "scripts": {
+        "deploy": "npm install && npm publish"
+    },
+    "keywords": [
+        "yeoman-generator",
+        "ego",
+        "digital",
+        "gmbh",
+        "apis",
+        "rest",
+        "node",
+        "express",
+        "web",
+        "apps",
+        "electron",
+        "vue",
+        "html5",
+        "typescript",
+        "docker",
+        "ecmascript",
+        "javascript",
+        "vuetify",
+        "electron",
+        "react-native"
+    ],
+    "author": "e.GO Digital GmbH, Aachen, Germany",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/egodigital/generator-ego/issues"
+    },
+    "homepage": "https://github.com/egodigital/generator-ego#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/egodigital/generator-ego.git"
+    },
+    "dependencies": {
+        "@egodigital/egoose": "^8.5.0",
+        "chalk": "^4.1.0",
+        "ejs": "^3.1.6",
+        "fs-extra": "^9.1.0",
+        "got": "^11.8.2",
+        "html-entities": "^2.3.2",
+        "minimatch": "^3.0.4",
+        "moment": "^2.29.1",
+        "node-zip": "^1.1.1",
+        "opn": "^6.0.0",
+        "ora": "^5.4.0",
+        "sanitize-filename": "^1.6.3",
+        "signale": "^1.4.0",
+        "xml-js": "^1.6.11",
+        "yeoman-generator": "^4.13.0"
+    },
+    "engines": {
+        "node": ">=12.0.0"
+    }
 }
