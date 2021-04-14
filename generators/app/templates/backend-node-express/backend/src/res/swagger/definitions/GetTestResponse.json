@@ -13,7 +13,6 @@
         "data": {
             "type": "object",
             "required": [
-                "isSqlConnectionWorking",
                 "message"
             ],
             "properties": {

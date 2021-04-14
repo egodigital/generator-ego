@@ -1,8 +1,9 @@
 # Change Log (generator-ego)
 
-## 0.31.1
+## 0.31.2
 
 * remove `npm install`s in `backend-node-express` generator to fix `node_module/` issues in frontend
+* bugfixes
 
 ## 0.30.0
 
