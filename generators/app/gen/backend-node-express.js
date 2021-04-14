@@ -221,19 +221,6 @@ exports.run = async function () {
         }
     );
 
-    // npm install
-    await this.tools.withSpinner(`Run 'npm install'`, async (spinner) => {
-        const nodeDirs = [
-            outDir,
-            path.join(outDir, 'backend'),
-            path.join(outDir, 'frontend')
-        ];
-
-        for (const dir of nodeDirs) {
-            this.tools.runNPMInstall(dir);
-        }
-    });
-
     await this.tools
         .askForGitInit(outDir);
 
