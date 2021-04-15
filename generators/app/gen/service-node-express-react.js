@@ -334,7 +334,9 @@ exports.run = async function () {
             // and based on options.frontend flag
             const tagIds = [
                 '79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2',
-                'b88a2f2f-75ea-43f5-8b20-55cda9f4b932'
+                'b88a2f2f-75ea-43f5-8b20-55cda9f4b932',
+                'aa5190bc-671d-40a0-8e8c-b0403eeb2230',
+                'e635ea03-010d-419f-aef9-055d215cec50'
             ];
             for (const tid of tagIds) {
                 const newLines = [];
