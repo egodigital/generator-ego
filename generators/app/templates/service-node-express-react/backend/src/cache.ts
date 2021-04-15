@@ -1,10 +1,12 @@
 import _ from 'lodash';
 import redis from 'redis';
 import { promisify } from 'util';
-import { REDIS_HOST, REDIS_PORT } from './constants';
 import { logger } from './diagnostics';
 import { ICache } from './types';
 import { tick, toStringSafe } from './utils';
+
+const REDIS_HOST = process.env.REDIS_HOST?.trim() || 'localhost';
+const REDIS_PORT = parseInt(process.env.REDIS_PORT?.trim() || '6379');
 
 const redisClient = redis.createClient({
     host: REDIS_HOST,

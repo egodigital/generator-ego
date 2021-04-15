@@ -34,7 +34,7 @@ from your console.
 
 | Name  | Description |
 | ------------- | ------------- |
-| `backend-node-express` | Creates a backend with a React frontend and database support. |
+| `service-node-express-react` | Creates a service with a React frontend and database support. |
 
 ## Additional generators
 

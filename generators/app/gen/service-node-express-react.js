@@ -22,18 +22,20 @@ const yaml = require('js-yaml');
 
 // information about that generator
 exports.about = {
-    displayName: 'Backend (Node - Express & React)',
+    displayName: 'Service (Node - Express Controllers & React)',
     icon: '🛠',
 };
 
-const optionDatabaseMongo = 'Mongo';
-const optionDatabaseTypeORM = 'TypeORM';
+const optionFrontend = 'Frontend';
+const optionMongo = 'Mongo';
+const optionRedis = 'Redis';
+const optionTypeORM = 'TypeORM';
 
 /**
  * A generator for Node.js based APIs (Express).
  */
 exports.run = async function () {
-    const templateDir = this.templatePath('backend-node-express');
+    const templateDir = this.templatePath('service-node-express-react');
 
     const projectName = this.tools.toStringSafe(
         await this.tools.promptString(
@@ -45,21 +47,29 @@ exports.run = async function () {
         return;
     }
 
-    const databases = await this.tools.promptMultiSelect(
-        'Select the databases, the backend supports:',
+    const selectedFeatures = await this.tools.promptMultiSelect(
+        'What features do you like to use?',
         [{
-            name: optionDatabaseTypeORM,
+            name: optionFrontend,
             checked: true
         }, {
-            name: optionDatabaseMongo,
+            name: optionMongo,
             checked: false
+        }, {
+            name: optionRedis,
+            checked: true
+        }, {
+            name: optionTypeORM,
+            checked: true
         }]
     );
 
     const options = {
-        mongo: databases.includes(optionDatabaseMongo),
+        frontend: selectedFeatures.includes(optionFrontend),
+        mongo: selectedFeatures.includes(optionMongo),
         name: sanitizeFilename(projectName.toLowerCase()),
-        typeORM: databases.includes(optionDatabaseTypeORM),
+        redis: selectedFeatures.includes(optionRedis),
+        typeORM: selectedFeatures.includes(optionTypeORM),
     };
 
     // create output directory
@@ -125,10 +135,16 @@ exports.run = async function () {
     await this.tools.withSpinner('Update package.json files', async (spinner) => {
         const packageJSONFiles = {
             'package.json': async (packageJSON) => {
-                packageJSON.name = `${options.name}`;
+                packageJSON.name = `${options.name}-service`;
             },
             'backend/package.json': async (packageJSON) => {
                 packageJSON.name = `${options.name}-backend`;
+
+                if (!options.redis) {
+                    delete packageJSON.dependencies['redis'];
+
+                    delete packageJSON.devDependencies['@types/redis'];
+                }
 
                 if (options.typeORM) {
                     packageJSON.scripts['dev'] = "ts-node ./node_modules/typeorm/cli.js migration:run && nodemon --watch 'src/**/*.ts' --watch 'src/res/**/*' --ignore 'src/**/*.spec.ts' --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts";
@@ -162,6 +178,15 @@ exports.run = async function () {
     await this.tools.withSpinner('Update docker-compose.yml', async (spinner) => {
         await editYAML('docker-compose.yml', (dockerCompose) => {
             const backendDependsOn = [];
+            const backendCommands = [
+                'apk add git && cd ./backend && npm install && npm run dev'
+            ];
+
+            if (options.redis) {
+                backendDependsOn.push('redis');
+            } else {
+                delete dockerCompose.services.redis;
+            }
 
             if (options.mongo) {
                 backendDependsOn.push('mongo');
@@ -175,6 +200,14 @@ exports.run = async function () {
                 delete dockerCompose.services.postgres;
             }
 
+            if (options.frontend) {
+                backendCommands.push(
+                    'cd ./frontend && npm install && npm rebuild node-sass && npm start'
+                );
+            }
+
+            dockerCompose.services.backend.command = `sh -c "${backendCommands.join(' & ')}"`;
+
             if (backendDependsOn.length) {
                 dockerCompose.services.backend.depends_on = backendDependsOn;
             } else {
@@ -183,7 +216,29 @@ exports.run = async function () {
         });
     });
 
-    await this.tools.withSpinner('Cleanups', async (spinner) => {
+    await this.tools.withSpinner('Cleanups', async (_spinner) => {
+        const dockerFileStartCommands = [
+            '/etc/init.d/sshd restart',
+            'cd /usr/src/app/backend',
+            'npm start'
+        ];
+
+        if (options.redis) {
+            dockerFileStartCommands.splice(1, 0, '/etc/init.d/redis restart');
+        } else {
+            await deleteFile('backend/src/cache.ts');
+
+            await editFile('Dockerfile', async (Dockerfile) => {
+                let lines = Dockerfile.split('\n');
+                lines = lines.filter(l => {
+                    return !l.includes('apk add redis') &&
+                        !l.includes('rc-update add redis');
+                });
+
+                return lines.join('\n');
+            });
+        }
+
         if (!options.typeORM) {
             await deleteFile('backend/ormconfig.js');
             await deleteFile('backend/src/database/typeorm.ts');
@@ -194,6 +249,10 @@ exports.run = async function () {
 
         if (!options.mongo) {
             await deleteFile('backend/src/database/mongo.ts');
+        }
+
+        if (!options.frontend) {
+            await deleteFolder('frontend');
         }
 
         const databaseIndexExports = [];
@@ -211,14 +270,123 @@ exports.run = async function () {
         } else {
             await deleteFolder('backend/src/database');
         }
+
+        // update Dockerfile
+        await editFile('Dockerfile', async (Dockerfile) => {
+            let lines = Dockerfile.split('\n').map(l => {
+                if (l.trim().startsWith('CMD ')) {
+                    l = `CMD sh -c "${dockerFileStartCommands.join(' && ')}"`;
+                }
+
+                return l;
+            }).filter(l => {
+                if (l.trim().startsWith('RUN cd frontend ')) {
+                    return options.frontend;
+                }
+
+                return true;
+            });
+
+            return lines.join('\n');
+        });
+
+        // update backend/.env
+        await editFile('backend/.env', async (envFile) => {
+            return envFile.split('\n').filter(l => {
+                if (l.trim().length) {
+                    if (!options.redis) {
+                        if (l.trim().startsWith('REDIS_')) {
+                            return false;
+                        }
+                    }
+
+                    if (!options.typeORM) {
+                        if (l.trim().startsWith('DB_')) {
+                            return false;
+                        }
+                    }
+
+                    if (!options.mongo) {
+                        if (l.trim().startsWith('MONGO_')) {
+                            return false;
+                        }
+                    }
+
+                    if (!options.frontend) {
+                        if (l.trim().startsWith('PORT')) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }).join('\n');
+        });
+
+        // update backend/src/host/index.ts
+        await editFile('backend/src/host/index.ts', async (hostIndex) => {
+            let lines = hostIndex.split('\n');
+
+            // remove or keep lines, surrounded by
+            // <frontend-tagid></frontend-tagid>
+            // and based on options.frontend flag
+            const tagIds = [
+                '79940f32-5a4b-4ed5-8c9e-d51ce43dd4d2',
+                'b88a2f2f-75ea-43f5-8b20-55cda9f4b932'
+            ];
+            for (const tid of tagIds) {
+                const newLines = [];
+
+                const tagStart = `<frontend-${tid}>`;
+                const tagEnd = `</frontend-${tid}>`;
+
+                let mode = 0;
+                for (let i = 0; i < lines.length; i++) {
+                    let l = lines[i];
+
+                    let addLine;
+
+                    if (mode === 0) {
+                        // we are before tagStart
+                        addLine = true;
+
+                        if (l.trim().endsWith(tagStart)) {
+                            addLine = false;
+                            mode = 1;
+                        }
+                    } else if (mode === 1) {
+                        // we are between tagStart and tagEnd
+
+                        addLine = options.frontend;
+
+                        if (l.trim().endsWith(tagEnd)) {
+                            addLine = false;
+                            mode = 2;  // add the rest
+                        }
+                    } else {
+                        addLine = true;
+                    }
+
+                    if (addLine) {
+                        newLines.push(l);
+                    }
+                }
+
+                lines = newLines;
+            }
+
+            return lines.join('\n');
+        });
     });
 
     // README.md
     this.tools.copyREADME(
         templateDir, outDir, {
-            name_internal: options.name,
-            title: projectName,
-        }
+        name_internal: options.name,
+        title: projectName,
+    }
     );
 
     // npm install
@@ -226,8 +394,13 @@ exports.run = async function () {
         const nodeDirs = [
             outDir,
             path.join(outDir, 'backend'),
-            path.join(outDir, 'frontend')
         ];
+
+        if (options.frontend) {
+            nodeDirs.push(
+                path.join(outDir, 'frontend')
+            );
+        }
 
         for (const dir of nodeDirs) {
             this.tools.runNPMInstall(dir);
