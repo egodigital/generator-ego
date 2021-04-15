@@ -22,7 +22,7 @@ const yaml = require('js-yaml');
 
 // information about that generator
 exports.about = {
-    displayName: 'Backend (Node - Express & React)',
+    displayName: 'Service (Node - Express Controllers & React)',
     icon: '🛠',
 };
 
@@ -35,7 +35,7 @@ const optionTypeORM = 'TypeORM';
  * A generator for Node.js based APIs (Express).
  */
 exports.run = async function () {
-    const templateDir = this.templatePath('backend-node-express');
+    const templateDir = this.templatePath('service-node-express-react');
 
     const projectName = this.tools.toStringSafe(
         await this.tools.promptString(
@@ -135,7 +135,7 @@ exports.run = async function () {
     await this.tools.withSpinner('Update package.json files', async (spinner) => {
         const packageJSONFiles = {
             'package.json': async (packageJSON) => {
-                packageJSON.name = `${options.name}`;
+                packageJSON.name = `${options.name}-service`;
             },
             'backend/package.json': async (packageJSON) => {
                 packageJSON.name = `${options.name}-backend`;

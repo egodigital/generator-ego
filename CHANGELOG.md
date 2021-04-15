@@ -1,5 +1,9 @@
 # Change Log (generator-ego)
 
+## 0.34.0
+
+* change `backend*` => `service*`
+
 ## 0.33.0
 
 * Redis and frontend features can be selected or deselected now
