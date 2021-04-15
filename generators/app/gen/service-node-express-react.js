@@ -74,7 +74,7 @@ exports.run = async function () {
 
     // create output directory
     const outDir = this.tools
-        .mkDestinationDir(options.name);
+        .mkDestinationDir(options.name + '-service');
 
     const deleteFile = async (relPath) => {
         const file = path.join(outDir, relPath);

@@ -1,5 +1,9 @@
 # Change Log (generator-ego)
 
+## 0.35.0
+
+* add `-service` suffix to output folder of `service-node-express-react` generator
+
 ## 0.34.0
 
 * change `backend*` => `service*`
