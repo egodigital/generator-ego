@@ -1,6 +1,6 @@
 # Change Log (generator-ego)
 
-## 0.35.1
+## 0.35.2
 
 * add `-service` suffix to output folder of `service-node-express-react` generator
 * bugfixes

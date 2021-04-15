@@ -1,4 +1,4 @@
-import { connect as openMongoConnection, Mongoose } from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 import { tick } from '../utils';
 import { Nilable } from '@egodigital/types';
 
@@ -25,7 +25,7 @@ export async function withMongo<TResult extends any = any>(
 ): Promise<TResult> {
     return tick(async () => {
         if (!connection) {
-            connection = await openMongoConnection(process.env.MONGO_CONNECTION!, {
+            connection = await mongoose.connect(process.env.MONGO_CONNECTION!, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
                 useFindAndModify: false,
